@@ -1,7 +1,7 @@
 import * as React from "react";
-import { ChakraProvider, theme, Button, Heading, Flex } from "@chakra-ui/react";
+import { ChakraProvider, theme, Flex } from "@chakra-ui/react";
 
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import LoggedInHome from "./Components/LoggedInHome";

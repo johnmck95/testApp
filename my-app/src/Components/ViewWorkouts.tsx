@@ -1,24 +1,14 @@
 import React from "react";
 import { Flex } from "@chakra-ui/react";
 import useWorkoutsWithExercises from "../Hooks/useWorkoutsWithExercises";
-
-//   /** WRITES apple to the 'things' collection DB **/
-//   React.useEffect(() => {
-//     async function writeData() {
-//       const thingsRef = collection(db, "things");
-//       await setDoc(doc(thingsRef, "apple"), {
-//         name: "Apple",
-//         food: true,
-//       });
-//     }
-//     writeData();
-//   });
+import FirebaseContext from "../App";
 
 export default function ViewWorkouts() {
-  //   const { loggedInUser } = React.useContext(FirebaseContext);
-  const { workoutsWithExercises, isLoading } = useWorkoutsWithExercises("abc");
+  const { loggedInUser } = React.useContext(FirebaseContext);
+  const { workoutsWithExercises, isLoading } = useWorkoutsWithExercises(
+    loggedInUser.uid
+  );
 
-  console.log(workoutsWithExercises);
   return (
     <Flex>
       <h1>View Workouts</h1>
