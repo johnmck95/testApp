@@ -6,9 +6,10 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { WorkoutType } from "../Types/types";
 
 const useWorkouts = (userUid: string) => {
-  const [workouts, setWorkouts] = useState<any[]>([]);
+  const [workouts, setWorkouts] = useState<WorkoutType[]>([]);
   const [workoutsIsLoading, setWorkoutsIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -22,9 +23,9 @@ const useWorkouts = (userUid: string) => {
         );
         const querySnapshot = await getDocs(workoutsQuery);
 
-        const fetchedWorkouts: any[] = [];
+        const fetchedWorkouts: WorkoutType[] = [];
         querySnapshot.forEach((doc) => {
-          fetchedWorkouts.push({ docUid: doc.id, ...doc.data() });
+          fetchedWorkouts.push({ ...(doc.data() as WorkoutType) });
         });
 
         setWorkouts(fetchedWorkouts);

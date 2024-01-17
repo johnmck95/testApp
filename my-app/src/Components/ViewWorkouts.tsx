@@ -1,7 +1,6 @@
 import React from "react";
 import { Flex } from "@chakra-ui/react";
-import useWorkouts from "../Hooks/useWorkouts";
-import useExercises from "../Hooks/useExercises";
+import useWorkoutsWithExercises from "../Hooks/useWorkoutsWithExercises";
 
 //   /** WRITES apple to the 'things' collection DB **/
 //   React.useEffect(() => {
@@ -17,26 +16,18 @@ import useExercises from "../Hooks/useExercises";
 
 export default function ViewWorkouts() {
   //   const { loggedInUser } = React.useContext(FirebaseContext);
-  const { workouts, workoutsIsLoading } = useWorkouts("abc");
+  const { workoutsWithExercises, isLoading } = useWorkoutsWithExercises("abc");
 
-  const { exercises, exercisesIsLoading } = useExercises("def");
-
+  console.log(workoutsWithExercises);
   return (
     <Flex>
       <h1>View Workouts</h1>
-      {workoutsIsLoading ? (
-        <p>Loading...</p>
-      ) : (
-        workouts.map((workout) => (
-          <p key={workout.id}>{JSON.stringify(workout)}</p>
-        ))
-      )}
 
-      {exercisesIsLoading ? (
+      {isLoading ? (
         <p>Loading...</p>
       ) : (
-        exercises.map((exercise) => (
-          <p key={exercise.id}>{JSON.stringify(exercise)}</p>
+        workoutsWithExercises.map((entry) => (
+          <p key={entry.uid}>{JSON.stringify(entry)}</p>
         ))
       )}
     </Flex>
