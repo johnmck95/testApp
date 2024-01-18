@@ -36,7 +36,12 @@ export default function Workout({
   );
 
   return (
-    <Flex m="1rem" bg="green.50" borderRadius="10px" padding="0.5rem">
+    <Flex
+      m={["0rem", "1rem"]}
+      bg="green.50"
+      borderRadius="10px"
+      padding={["0rem", "0.5rem"]}
+    >
       <Heading fontSize="md" w="100%">
         {workoutWithExercises.date.toDate().toLocaleDateString("en-CA", {
           weekday: "long",

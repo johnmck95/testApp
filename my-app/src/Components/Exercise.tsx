@@ -67,7 +67,7 @@ export default function Workout({ exercises }: { exercises: ExerciseType[] }) {
 
   return (
     <ListItem fontSize={"sm"} w="100%" padding="0.5rem">
-      <Grid templateColumns="min-content 1fr 1fr 1fr" gap={6} w="100%">
+      <Grid templateColumns="min-content 0.70fr 1.25fr 1.05fr" gap={6} w="100%">
         <GridItem minHeight="2rem">
           <ListIcon as={MdCheckCircle} color="green.500" />
         </GridItem>
