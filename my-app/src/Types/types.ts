@@ -4,14 +4,9 @@ export type UserType = {
   uid: string;
 };
 
-type FirebaseTimestamp = {
-  seconds: number;
-  nanoseconds: number;
-};
-
 export type WorkoutType = {
   comment: string;
-  date: FirebaseTimestamp;
+  date: any;
   uid: string;
   userUid: string;
 };
@@ -20,7 +15,7 @@ export type ExerciseType = {
   comment: string;
   isEmom: boolean;
   isLadder: boolean;
-  reps: number;
+  reps: string;
   sets: number;
   title: string;
   uid: string;

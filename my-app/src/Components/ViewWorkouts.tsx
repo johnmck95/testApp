@@ -1,7 +1,8 @@
 import React from "react";
-import { Flex } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import useWorkoutsWithExercises from "../Hooks/useWorkoutsWithExercises";
 import FirebaseContext from "../App";
+import Workout from "./Workout";
 
 export default function ViewWorkouts() {
   const { loggedInUser } = React.useContext(FirebaseContext);
@@ -10,16 +11,19 @@ export default function ViewWorkouts() {
   );
 
   return (
-    <Flex>
-      <h1>View Workouts</h1>
+    <Box display="flex" flexDirection="column" padding="1rem">
+      <Heading fontSize="lg" alignSelf="center">
+        Recorded Workouts
+      </Heading>
 
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        workoutsWithExercises.map((entry) => (
-          <p key={entry.uid}>{JSON.stringify(entry)}</p>
+        workoutsWithExercises.map((workout) => (
+          <Workout workoutWithExercises={workout} />
+          // <p key={entry.uid}>{JSON.stringify(entry)}</p>
         ))
       )}
-    </Flex>
+    </Box>
   );
 }
