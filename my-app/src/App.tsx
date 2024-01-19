@@ -39,7 +39,6 @@ export const App = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <Flex flex-direction="column"></Flex>
       <FirebaseContext.Provider
         value={{ app, db, loggedInUser, setLoggedInUser }}
       >

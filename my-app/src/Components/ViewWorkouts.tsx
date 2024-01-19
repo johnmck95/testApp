@@ -11,7 +11,7 @@ export default function ViewWorkouts() {
   );
 
   return (
-    <Box display="flex" flexDirection="column" padding="1rem">
+    <Box display="flex" flexDirection="column" padding={["0.25rem", "1rem"]}>
       <Heading fontSize="lg" alignSelf="center">
         Recorded Workouts
       </Heading>
@@ -21,7 +21,6 @@ export default function ViewWorkouts() {
       ) : (
         workoutsWithExercises.map((workout) => (
           <Workout workoutWithExercises={workout} />
-          // <p key={entry.uid}>{JSON.stringify(entry)}</p>
         ))
       )}
     </Box>

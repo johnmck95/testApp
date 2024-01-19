@@ -1,65 +1,39 @@
 import React from "react";
-import { ExerciseType, WorkoutWithExercisesType } from "../Types/types";
-import { Flex, Heading, List } from "@chakra-ui/react";
+import { WorkoutWithExercisesType } from "../Types/types";
+import { Box, Heading, List } from "@chakra-ui/react";
 import Exercise from "./Exercise";
-
-const groupExercisesByTitle = (exercises: ExerciseType[]) => {
-  const groupedExercises: { [title: string]: ExerciseType[] } = {};
-
-  exercises.forEach((exercise) => {
-    const title = exercise.title.toLowerCase();
-
-    if (!groupedExercises[title]) {
-      groupedExercises[title] = [];
-    }
-
-    groupedExercises[title].push(exercise);
-  });
-
-  return groupedExercises;
-};
 
 export default function Workout({
   workoutWithExercises,
 }: {
   workoutWithExercises: WorkoutWithExercisesType;
 }) {
-  const ladderExercises = workoutWithExercises.exercises.filter(
-    (exercise) => exercise.isLadder
-  );
-  // Group ladder exercises by title
-  const groupedLadderExercises = groupExercisesByTitle(ladderExercises);
-
-  // For other exercises, create an array with a single element
-  const nonLadderExercises = workoutWithExercises.exercises.filter(
-    (exercise) => !exercise.isLadder
-  );
-
   return (
-    <Flex
-      m={["0rem", "1rem"]}
-      bg="green.50"
+    <Box
+      bg="green.100"
       borderRadius="10px"
-      padding={["0rem", "0.5rem"]}
+      w="100%"
+      my="1rem"
+      padding={["0.25rem", "0.5rem"]}
     >
-      <Heading fontSize="md" w="100%">
+      <Heading
+        fontSize={["sm", "md"]}
+        w="100%"
+        mx={["0.5rem", "1rem"]}
+        py="0.5rem"
+      >
         {workoutWithExercises.date.toDate().toLocaleDateString("en-CA", {
           weekday: "long",
           year: "numeric",
           month: "short",
           day: "numeric",
         })}
-        <List margin="1rem" w="100%">
-          {/* Combine Ladder Exercises that have the same Title into 1 row */}
-          {Object.keys(groupedLadderExercises).map((title) => (
-            <Exercise key={title} exercises={groupedLadderExercises[title]} />
-          ))}
-
-          {nonLadderExercises.map((exercise) => (
-            <Exercise key={exercise.uid} exercises={[exercise]} />
-          ))}
-        </List>
       </Heading>
-    </Flex>
+      <List w="100%">
+        {workoutWithExercises.exercises.map((exercise) => (
+          <Exercise key={exercise.uid} exercise={exercise} />
+        ))}
+      </List>
+    </Box>
   );
 }
