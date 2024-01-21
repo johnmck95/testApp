@@ -20,7 +20,7 @@ export default function ViewWorkouts() {
         <p>Loading...</p>
       ) : (
         workoutsWithExercises.map((workout) => (
-          <Workout workoutWithExercises={workout} />
+          <Workout key={workout.uid} workoutWithExercises={workout} />
         ))
       )}
     </Box>
