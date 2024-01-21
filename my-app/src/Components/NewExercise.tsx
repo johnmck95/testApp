@@ -9,6 +9,7 @@ import {
   HStack,
   Select,
   Button,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 
 function validateStringField(value: string): boolean {
@@ -17,6 +18,11 @@ function validateStringField(value: string): boolean {
 
 function validateNumericalField(value: number): boolean {
   return value > 0 ? true : false;
+}
+
+function validateEmomAndLadder(emom: boolean, ladder: boolean): boolean {
+  const bothSelected = emom && ladder;
+  return bothSelected;
 }
 
 export default function NewExercise({
@@ -67,12 +73,13 @@ export default function NewExercise({
 
   function validateThenSaveExercise() {
     setSubmittedForm(true);
-    const { title, sets, reps, weight } = exerciseState;
+    const { title, sets, reps, weight, isEmom, isLadder } = exerciseState;
     if (
       !validateStringField(title) ||
       !validateStringField(reps) ||
       !validateNumericalField(sets) ||
-      !validateNumericalField(weight)
+      !validateNumericalField(weight) ||
+      validateEmomAndLadder(isEmom, isLadder)
     ) {
       return;
     } else {
@@ -178,33 +185,41 @@ export default function NewExercise({
         </HStack>
       </HStack>
 
-      <HStack my="0.5rem">
-        <FormControl mr="2.5rem">
-          <FormLabel>EMOM</FormLabel>
-          <span>False </span>
-          <Switch
-            name="isEmom"
-            id="isEmom"
-            onChange={() => handleExerciseSwitchChange("isEmom")}
-            isChecked={exerciseState.isEmom}
-            isDisabled={!formIsEditable}
-          />
-          <span> True</span>
-        </FormControl>
+      <FormControl
+        isInvalid={
+          submittedForm &&
+          validateEmomAndLadder(exerciseState.isEmom, exerciseState.isLadder)
+        }
+      >
+        <HStack my="0.5rem">
+          <FormControl mr="2.5rem">
+            <FormLabel>EMOM</FormLabel>
+            <span>False </span>
+            <Switch
+              name="isEmom"
+              id="isEmom"
+              onChange={() => handleExerciseSwitchChange("isEmom")}
+              isChecked={exerciseState.isEmom}
+              isDisabled={!formIsEditable}
+            />
+            <span> True</span>
+          </FormControl>
 
-        <FormControl>
-          <FormLabel>Ladder</FormLabel>
-          <span>False </span>
-          <Switch
-            name="isLadder"
-            id="isLadder"
-            onChange={() => handleExerciseSwitchChange("isLadder")}
-            isChecked={exerciseState.isLadder}
-            isDisabled={!formIsEditable}
-          />
-          <span> True</span>
-        </FormControl>
-      </HStack>
+          <FormControl>
+            <FormLabel>Ladder</FormLabel>
+            <span>False </span>
+            <Switch
+              name="isLadder"
+              id="isLadder"
+              onChange={() => handleExerciseSwitchChange("isLadder")}
+              isChecked={exerciseState.isLadder}
+              isDisabled={!formIsEditable}
+            />
+            <span> True</span>
+          </FormControl>
+        </HStack>
+        <FormErrorMessage>You cannot select EMOM and Ladder</FormErrorMessage>
+      </FormControl>
 
       <HStack>
         <FormControl>
