@@ -5,6 +5,7 @@ import {
   Input,
   HStack,
   Container,
+  Button,
 } from "@chakra-ui/react";
 import { ExerciseType, WorkoutType } from "../Types/types";
 import FirebaseContext from "../App";
@@ -93,6 +94,23 @@ export default function NewWorkout() {
   //     console.log("===================");
   //   }, [savedExercises]);
 
+  const addNewExercise = async () => {
+    const newExerciseUid = await generateUid();
+    const newExercise: ExerciseType = {
+      comment: "",
+      isEmom: false,
+      isLadder: false,
+      reps: "",
+      sets: 0,
+      title: "",
+      uid: newExerciseUid,
+      workoutUid: workoutState.uid,
+      weight: 0,
+      weightUnit: "kg",
+    };
+    setSavedExercises((prevExercises) => [newExercise, ...prevExercises]);
+  };
+
   return (
     <Container
       w="100%"
@@ -100,7 +118,7 @@ export default function NewWorkout() {
       flexDirection={"column"}
       p="1rem 3rem 3rem 2rem"
     >
-      <HStack mb="1rem" w="100%">
+      <HStack mb="1rem" w="100%" alignItems={"flex-end"}>
         <FormControl>
           <FormLabel>Workout Date</FormLabel>
           <Input
@@ -111,6 +129,8 @@ export default function NewWorkout() {
             onChange={handleWorkoutChange}
           />
         </FormControl>
+
+        <Button onClick={addNewExercise}>Add Exercise</Button>
       </HStack>
       <br />
       {/* {savedExercises.map((savedExercise) => (
@@ -120,14 +140,33 @@ export default function NewWorkout() {
         />
       ))} */}
       {savedExercises.map((savedExercise) => (
+        // <NewExercise
+        //   key={savedExercise.uid}
+        //   exercise={savedExercise}
+        //   setSavedExercises={(updatedExercise) => {
+        //     const updatedExercises = savedExercises.map((exercise) =>
+        //       exercise.uid === updatedExercise.uid ? updatedExercise : exercise
+        //     );
+        //     setSavedExercises(updatedExercises);
+        //   }}
+        // />
         <NewExercise
           key={savedExercise.uid}
           exercise={savedExercise}
-          setSavedExercises={(updatedExercise) => {
-            const updatedExercises = savedExercises.map((exercise) =>
-              exercise.uid === updatedExercise.uid ? updatedExercise : exercise
-            );
-            setSavedExercises(updatedExercises);
+          setSavedExercises={(updatedExercise, action) => {
+            if (action === "delete") {
+              const updatedExercises = savedExercises.filter(
+                (exercise) => exercise.uid !== updatedExercise.uid
+              );
+              setSavedExercises(updatedExercises);
+            } else {
+              const updatedExercises = savedExercises.map((exercise) =>
+                exercise.uid === updatedExercise.uid
+                  ? updatedExercise
+                  : exercise
+              );
+              setSavedExercises(updatedExercises);
+            }
           }}
         />
       ))}

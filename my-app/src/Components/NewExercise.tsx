@@ -10,7 +10,17 @@ import {
   Select,
   Button,
   FormErrorMessage,
+  IconButton,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
+import { BsXSquareFill } from "react-icons/bs";
 
 function validateStringField(value: string): boolean {
   return value.length > 0 ? true : false;
@@ -30,12 +40,13 @@ export default function NewExercise({
   setSavedExercises,
 }: {
   exercise: ExerciseType;
-  setSavedExercises: (updatedExercise: ExerciseType) => void;
+  setSavedExercises: (updatedExercise: ExerciseType, action?: string) => void;
 }) {
   const [exerciseState, setExerciseState] =
     React.useState<ExerciseType>(exercise);
   const [submittedForm, setSubmittedForm] = React.useState(false);
   const [formIsEditable, setFormIsEditable] = React.useState(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   function handleExerciseInputChange(
     event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
@@ -88,6 +99,17 @@ export default function NewExercise({
     }
   }
 
+  function handleDelete() {
+    onOpen();
+    // setSavedExercises(exercise, "delete");
+  }
+
+  const confirmDelete = () => {
+    // Perform any additional logic before deletion if needed
+    setSavedExercises(exercise, "delete");
+    onClose();
+  };
+
   return (
     <VStack
       w="100%"
@@ -97,22 +119,30 @@ export default function NewExercise({
       boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
       margin="10px"
     >
-      <HStack>
-        <FormControl
-          isRequired
-          isInvalid={submittedForm && !validateStringField(exerciseState.title)}
-        >
+      <FormControl
+        isRequired
+        isInvalid={submittedForm && !validateStringField(exerciseState.title)}
+      >
+        <HStack justifyContent={"space-between"} w="100%">
           <FormLabel>Title</FormLabel>
-          <Input
-            isRequired
-            name="title"
-            type="text"
-            value={exerciseState.title}
-            onChange={handleExerciseInputChange}
-            isDisabled={!formIsEditable}
+          <IconButton
+            aria-label="Close"
+            icon={<BsXSquareFill />}
+            size="md"
+            variant="ghost"
+            onClick={handleDelete}
           />
-        </FormControl>
-      </HStack>
+        </HStack>
+        <Input
+          isRequired
+          name="title"
+          type="text"
+          maxW="300px"
+          value={exerciseState.title}
+          onChange={handleExerciseInputChange}
+          isDisabled={!formIsEditable}
+        />
+      </FormControl>
 
       <HStack>
         <HStack>
@@ -245,6 +275,21 @@ export default function NewExercise({
       >
         {formIsEditable ? "Save Exercise" : "Edit Exercise"}
       </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Deletion</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>Are you sure you want to delete this exercise?</ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" onClick={confirmDelete}>
+              Delete
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </VStack>
   );
 }
