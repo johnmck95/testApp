@@ -114,6 +114,10 @@ export default function NewWorkout({
       display="flex"
       flexDirection={"column"}
       p="1rem 3rem 3rem 2rem"
+      borderRadius="10px"
+      padding="15px"
+      my="2rem"
+      boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
     >
       <HStack w="100%" alignItems={"flex-end"}>
         <FormControl>
@@ -123,6 +127,16 @@ export default function NewWorkout({
             type="date"
             maxW="180px"
             value={workoutState.date}
+            onChange={handleWorkoutChange}
+          />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel>Comment</FormLabel>
+          <Input
+            name="comment"
+            type="text"
+            value={workoutState.comment}
             onChange={handleWorkoutChange}
           />
         </FormControl>
