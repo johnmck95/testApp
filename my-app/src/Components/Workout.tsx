@@ -10,8 +10,8 @@ export default function Workout({
 }) {
   return (
     <Box
-      bg="green.100"
       borderRadius="10px"
+      boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
       w="100%"
       my="1rem"
       padding={["0.25rem", "0.5rem"]}

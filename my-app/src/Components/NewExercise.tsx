@@ -21,19 +21,12 @@ import {
   ModalFooter,
 } from "@chakra-ui/react";
 import { BsXSquareFill } from "react-icons/bs";
-
-function validateStringField(value: string): boolean {
-  return value.length > 0 ? true : false;
-}
-
-function validateNumericalField(value: number): boolean {
-  return value > 0 ? true : false;
-}
-
-function validateEmomAndLadder(emom: boolean, ladder: boolean): boolean {
-  const bothSelected = emom && ladder;
-  return bothSelected;
-}
+import {
+  validateStringField,
+  validateNumericalField,
+  validateEmomAndLadder,
+  validateExerciseFormFields,
+} from "../Functions/FormValidation";
 
 export default function NewExercise({
   exercise,
@@ -84,14 +77,7 @@ export default function NewExercise({
 
   function validateThenSaveExercise() {
     setSubmittedForm(true);
-    const { title, sets, reps, weight, isEmom, isLadder } = exerciseState;
-    if (
-      !validateStringField(title) ||
-      !validateStringField(reps) ||
-      !validateNumericalField(sets) ||
-      !validateNumericalField(weight) ||
-      validateEmomAndLadder(isEmom, isLadder)
-    ) {
+    if (validateExerciseFormFields(exerciseState)) {
       return;
     } else {
       setFormIsEditable(false);
@@ -99,13 +85,7 @@ export default function NewExercise({
     }
   }
 
-  function handleDelete() {
-    onOpen();
-    // setSavedExercises(exercise, "delete");
-  }
-
   const confirmDelete = () => {
-    // Perform any additional logic before deletion if needed
     setSavedExercises(exercise, "delete");
     onClose();
   };
@@ -117,7 +97,6 @@ export default function NewExercise({
       borderRadius="10px"
       padding="15px"
       boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
-      margin="10px"
     >
       <FormControl
         isRequired
@@ -130,7 +109,7 @@ export default function NewExercise({
             icon={<BsXSquareFill />}
             size="md"
             variant="ghost"
-            onClick={handleDelete}
+            onClick={onOpen}
           />
         </HStack>
         <Input
@@ -206,7 +185,6 @@ export default function NewExercise({
               value={exerciseState.weightUnit}
               onChange={handleExerciseInputChange}
               isDisabled={!formIsEditable}
-              defaultValue={"kg"}
             >
               <option value="kg">kg</option>
               <option value="lb">lb</option>
