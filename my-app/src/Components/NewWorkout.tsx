@@ -3,7 +3,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  VStack,
   HStack,
   Container,
   Button,
@@ -20,22 +19,14 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import { safeToSendWorkoutAndExercisesToDB } from "../Functions/FormValidation";
+import {
+  safeToSendWorkoutAndExercisesToDB,
+  validateExerciseFormFields,
+} from "../Functions/FormValidation";
 import { sendNewWorkoutWithExercisesToDB } from "../Functions/Helpers";
 
 const MotionBox = motion(Box);
 
-//   /** WRITES apple to the 'things' collection DB **/
-//   React.useEffect(() => {
-//     async function writeData() {
-//       const thingsRef = collection(db, "things");
-//       await setDoc(doc(thingsRef, "apple"), {
-//         name: "Apple",
-//         food: true,
-//       });
-//     }
-//     writeData();
-//   });
 const getCurrentDate = () => {
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -52,7 +43,11 @@ async function generateUid(): Promise<string> {
   return uid;
 }
 
-export default function NewWorkout() {
+export default function NewWorkout({
+  setShowNewWorkout,
+}: {
+  setShowNewWorkout: (val: boolean) => void;
+}) {
   const { loggedInUser } = React.useContext(FirebaseContext);
   const [workoutState, setWorkoutState] = React.useState<WorkoutType>({
     comment: "",
@@ -67,22 +62,8 @@ export default function NewWorkout() {
   React.useEffect(() => {
     const initializeState = async () => {
       const workoutUid = await generateUid();
-      const exerciseUid = await generateUid();
       setWorkoutState((prev) => ({ ...prev, uid: workoutUid }));
-      setSavedExercises([
-        {
-          comment: "",
-          isEmom: false,
-          isLadder: false,
-          reps: "",
-          sets: 0,
-          title: "",
-          uid: exerciseUid,
-          workoutUid,
-          weight: 0,
-          weightUnit: "kg",
-        },
-      ]);
+      setSavedExercises([]);
     };
     initializeState();
   }, []);
@@ -104,6 +85,7 @@ export default function NewWorkout() {
 
     if (passOrFail.dataIsSafe) {
       await sendNewWorkoutWithExercisesToDB(workoutState, savedExercises);
+      setShowNewWorkout(false);
     } else {
       console.log(`DB Write failed: ${passOrFail.reason}`);
     }
@@ -149,7 +131,17 @@ export default function NewWorkout() {
 
       <HStack w="100%" mt="1rem" mb="2rem" justifyContent={"space-between"}>
         <Button onClick={addNewExercise}>Add Exercise</Button>
-        <Button onClick={validateAndSaveWorkout}> Save Workout </Button>
+        <Button
+          isDisabled={
+            savedExercises.length < 1 ||
+            !savedExercises.every(
+              (exercise) => !validateExerciseFormFields(exercise)
+            )
+          }
+          onClick={validateAndSaveWorkout}
+        >
+          Save Workout
+        </Button>
       </HStack>
 
       <AnimatePresence>

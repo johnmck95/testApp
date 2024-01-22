@@ -18,12 +18,11 @@ const LoggedInHome = () => {
         boxShadow={"0 0 15px rgba(0, 0, 0, 0.1)"}
         flexDirection={["column", "row"]}
       >
-        <Heading fontSize={["medium", "2xl"]} margin="5px">
+        <Heading fontSize={["xl", "2xl"]} margin="5px">
           Welcome, {loggedInUser.displayName}
         </Heading>
         <Flex>
           <Button
-            size={["xs", "xs", "md", "lg"]}
             margin="5px"
             onClick={() =>
               setShowNewWorkout((prevShowNewWorkout) => !prevShowNewWorkout)
@@ -31,16 +30,16 @@ const LoggedInHome = () => {
           >
             {showNewWorkout ? "Return" : "Record New Workout"}
           </Button>
-          <Button
-            size={["xs", "xs", "md", "lg"]}
-            margin="5px"
-            onClick={() => auth.signOut()}
-          >
+          <Button margin="5px" onClick={() => auth.signOut()}>
             Sign Out
           </Button>
         </Flex>
       </Flex>
-      {showNewWorkout ? <NewWorkout /> : <ViewWorkouts />}
+      {showNewWorkout ? (
+        <NewWorkout setShowNewWorkout={setShowNewWorkout} />
+      ) : (
+        <ViewWorkouts />
+      )}
     </>
   );
 };

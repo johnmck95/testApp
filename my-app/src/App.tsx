@@ -34,7 +34,6 @@ export const App = () => {
         setLoggedInUser(null);
       }
     });
-    console.log("Auth useEffect Ran");
   }, []);
 
   return (

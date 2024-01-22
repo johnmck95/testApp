@@ -30,7 +30,6 @@ export function validateExerciseFormFields(exercise: ExerciseType): boolean {
   }
 }
 
-// TODO
 export function validateWorkoutDate(workout: WorkoutType): boolean {
   const YYYYMMDDRegex = /^\d{4}-\d{2}-\d{2}$/;
   return YYYYMMDDRegex.test(workout.date);
