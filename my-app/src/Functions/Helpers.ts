@@ -7,7 +7,6 @@ import {
   Timestamp,
   addDoc,
 } from "firebase/firestore";
-import FirebaseContext from "../App";
 import { ExerciseType, WorkoutType } from "../Types/types";
 
 // Convert "yyyy-mm-dd" to Firebase Timestamp
