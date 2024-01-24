@@ -13,11 +13,11 @@ function totalReps(exercise: ExerciseType): number {
   const totalRepsPerSet: number = parsedReps.reduce((accumulated, number) => {
     return accumulated + parseInt(number, 10);
   }, 0);
-  return sets * totalRepsPerSet;
+  return sets! * totalRepsPerSet;
 }
 
 function workCapacity(exercise: ExerciseType): number {
-  return totalReps(exercise) * exercise.weight;
+  return totalReps(exercise) * exercise.weight!;
 }
 
 export default function Workout({ exercise }: { exercise: ExerciseType }) {

@@ -104,7 +104,7 @@ export default function NewExercise({
         isInvalid={submittedForm && !validateStringField(exerciseState.title)}
       >
         <HStack justifyContent={"space-between"} w="100%">
-          <FormLabel>Title</FormLabel>
+          <FormLabel>Exercise</FormLabel>
           <IconButton
             aria-label="Close"
             icon={<BsXSquareFill />}
@@ -129,19 +129,19 @@ export default function NewExercise({
           <FormControl
             isRequired
             isInvalid={
-              submittedForm && !validateNumericalField(exerciseState.sets)
+              submittedForm && !validateNumericalField(exerciseState.sets!)
             }
           >
             <FormLabel>Sets</FormLabel>
             <Input
               name="sets"
               type="number"
-              placeholder="sets"
-              value={exerciseState.sets}
+              value={exerciseState.sets!}
               onChange={handleExerciseInputChange}
               isDisabled={!formIsEditable}
             />
           </FormControl>
+
           <FormControl
             isRequired
             isInvalid={
@@ -152,7 +152,6 @@ export default function NewExercise({
             <Input
               name="reps"
               type="text"
-              placeholder="reps"
               value={exerciseState.reps}
               onChange={handleExerciseInputChange}
               isDisabled={!formIsEditable}
@@ -166,7 +165,7 @@ export default function NewExercise({
           <FormControl
             isRequired
             isInvalid={
-              submittedForm && !validateNumericalField(exerciseState.weight)
+              submittedForm && !validateNumericalField(exerciseState.weight!)
             }
           >
             <FormLabel>Weight</FormLabel>
@@ -174,7 +173,7 @@ export default function NewExercise({
               name="weight"
               id="weight"
               type="number"
-              value={exerciseState.weight}
+              value={exerciseState.weight!}
               onChange={handleExerciseInputChange}
               isDisabled={!formIsEditable}
             />

@@ -16,11 +16,11 @@ export type ExerciseType = {
   isEmom: boolean;
   isLadder: boolean;
   reps: string;
-  sets: number;
+  sets: number | null;
   title: string;
   uid: string;
   workoutUid: string;
-  weight: number;
+  weight: number | null;
   weightUnit: string;
 };
 

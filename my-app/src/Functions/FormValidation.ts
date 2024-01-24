@@ -18,10 +18,12 @@ export function validateEmomAndLadder(emom: boolean, ladder: boolean): boolean {
 export function validateExerciseFormFields(exercise: ExerciseType): boolean {
   const { title, sets, reps, weight, isEmom, isLadder } = exercise;
   if (
+    !sets ||
+    !weight ||
     !validateStringField(title) ||
     !validateStringField(reps) ||
-    !validateNumericalField(sets) ||
-    !validateNumericalField(weight) ||
+    !validateNumericalField(sets!) ||
+    !validateNumericalField(weight!) ||
     validateEmomAndLadder(isEmom, isLadder)
   ) {
     return true;

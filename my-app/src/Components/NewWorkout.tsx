@@ -92,11 +92,11 @@ export default function NewWorkout({
       isEmom: false,
       isLadder: false,
       reps: "",
-      sets: 0,
+      sets: null,
       title: "",
       uid: newExerciseUid,
       workoutUid: workoutState.uid,
-      weight: 0,
+      weight: null,
       weightUnit: "kg",
     };
     setSavedExercises((prevExercises) => [newExercise, ...prevExercises]);
