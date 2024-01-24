@@ -1,6 +1,6 @@
 import React from "react";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Center } from "@chakra-ui/react";
 import {
   addDoc,
   collection,
@@ -54,11 +54,11 @@ async function signInWithGoogle() {
 const LoggedOutHome = () => {
   return (
     <>
-      <Flex width="100vw" justifyContent={"space-between"}>
+      <Center h="100vh">
         <Button margin="5px" onClick={signInWithGoogle}>
           Sign in with Google
         </Button>
-      </Flex>
+      </Center>
     </>
   );
 };
