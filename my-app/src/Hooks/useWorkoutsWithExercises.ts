@@ -5,6 +5,8 @@ import {
   query,
   where,
   getDocs,
+  onSnapshot,
+  orderBy,
 } from "firebase/firestore";
 import {
   ExerciseType,
@@ -19,25 +21,24 @@ const useWorkoutsWithExercises = (userUid: string) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    const db = getFirestore();
+    const workoutsCollection = collection(db, "workouts");
+    const workoutsQuery = query(
+      workoutsCollection,
+      where("userUid", "==", userUid),
+      orderBy("date", "desc")
+    );
+
     const fetchWorkoutsAndExercises = async () => {
       try {
-        const db = getFirestore();
-        const workoutsCollection = collection(db, "workouts");
-        const workoutsQuery = query(
-          workoutsCollection,
-          where("userUid", "==", userUid)
-        );
         const workoutsSnapshot = await getDocs(workoutsQuery);
-
         const fetchedWorkoutsWithExercises: WorkoutWithExercisesType[] = [];
 
-        // Loop through each workout
         for (const workoutDoc of workoutsSnapshot.docs) {
           const workoutData: WorkoutType = {
             ...(workoutDoc.data() as WorkoutType),
           };
 
-          // Fetch exercises for the current workout
           const exercisesCollection = collection(db, "exercises");
           const exercisesQuery = query(
             exercisesCollection,
@@ -52,7 +53,6 @@ const useWorkoutsWithExercises = (userUid: string) => {
             });
           });
 
-          // Combine workout data with exercises
           const workoutWithExercises = {
             ...workoutData,
             exercises: fetchedExercises,
@@ -68,7 +68,13 @@ const useWorkoutsWithExercises = (userUid: string) => {
       }
     };
 
-    fetchWorkoutsAndExercises();
+    const unsubscribe = onSnapshot(workoutsQuery, (snapshot) => {
+      fetchWorkoutsAndExercises();
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, [userUid]);
 
   return { workoutsWithExercises, isLoading };

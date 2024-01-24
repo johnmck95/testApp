@@ -97,6 +97,7 @@ export default function NewExercise({
       borderRadius="10px"
       padding="15px"
       boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
+      my="0.75rem"
     >
       <FormControl
         isRequired

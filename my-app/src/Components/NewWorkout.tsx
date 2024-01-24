@@ -7,6 +7,7 @@ import {
   Container,
   Button,
   Box,
+  Flex,
 } from "@chakra-ui/react";
 import { ExerciseType, WorkoutType } from "../Types/types";
 import FirebaseContext from "../App";
@@ -19,11 +20,9 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  safeToSendWorkoutAndExercisesToDB,
-  validateExerciseFormFields,
-} from "../Functions/FormValidation";
-import { sendNewWorkoutWithExercisesToDB } from "../Functions/Helpers";
+import { validateExerciseFormFields } from "../Functions/FormValidation";
+import useValidateAndSaveWorkout from "../Hooks/useValidateAndSaveWorkout";
+import LoadingSpinner from "./LoadingSpinner";
 
 const MotionBox = motion(Box);
 
@@ -48,6 +47,7 @@ export default function NewWorkout({
 }: {
   setShowNewWorkout: (val: boolean) => void;
 }) {
+  const { validateAndSaveWorkout, isSaving } = useValidateAndSaveWorkout();
   const { loggedInUser } = React.useContext(FirebaseContext);
   const [workoutState, setWorkoutState] = React.useState<WorkoutType>({
     comment: "",
@@ -76,20 +76,14 @@ export default function NewWorkout({
     }));
   }
 
-  async function validateAndSaveWorkout() {
-    const passOrFail = await safeToSendWorkoutAndExercisesToDB(
+  const handleValidateAndSaveWorkout = () => {
+    validateAndSaveWorkout(
       workoutState,
       savedExercises,
+      setShowNewWorkout,
       loggedInUser
     );
-
-    if (passOrFail.dataIsSafe) {
-      await sendNewWorkoutWithExercisesToDB(workoutState, savedExercises);
-      setShowNewWorkout(false);
-    } else {
-      console.log(`DB Write failed: ${passOrFail.reason}`);
-    }
-  }
+  };
 
   const addNewExercise = async () => {
     const newExerciseUid = await generateUid();
@@ -119,76 +113,89 @@ export default function NewWorkout({
       my="2rem"
       boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
     >
-      <HStack w="100%" alignItems={"flex-end"}>
-        <FormControl>
-          <FormLabel>Workout Date</FormLabel>
-          <Input
-            name="date"
-            type="date"
-            maxW="180px"
-            value={workoutState.date}
-            onChange={handleWorkoutChange}
-          />
-        </FormControl>
-
-        <FormControl>
-          <FormLabel>Comment</FormLabel>
-          <Input
-            name="comment"
-            type="text"
-            value={workoutState.comment}
-            onChange={handleWorkoutChange}
-          />
-        </FormControl>
-      </HStack>
-      <br />
-
-      <HStack w="100%" mt="1rem" mb="2rem" justifyContent={"space-between"}>
-        <Button onClick={addNewExercise}>Add Exercise</Button>
-        <Button
-          isDisabled={
-            savedExercises.length < 1 ||
-            !savedExercises.every(
-              (exercise) => !validateExerciseFormFields(exercise)
-            )
-          }
-          onClick={validateAndSaveWorkout}
+      {isSaving ? (
+        <Flex
+          w="100%"
+          justifyContent={"center"}
+          alignItems={"center"}
+          my="5rem"
         >
-          Save Workout
-        </Button>
-      </HStack>
+          <LoadingSpinner />
+        </Flex>
+      ) : (
+        <>
+          <HStack w="100%" alignItems={"flex-end"}>
+            <FormControl>
+              <FormLabel>Workout Date</FormLabel>
+              <Input
+                name="date"
+                type="date"
+                maxW="180px"
+                value={workoutState.date}
+                onChange={handleWorkoutChange}
+              />
+            </FormControl>
 
-      <AnimatePresence>
-        {savedExercises.map((savedExercise) => (
-          <MotionBox
-            key={savedExercise.uid}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <NewExercise
-              key={savedExercise.uid}
-              exercise={savedExercise}
-              setSavedExercises={(updatedExercise, action) => {
-                if (action === "delete") {
-                  const updatedExercises = savedExercises.filter(
-                    (exercise) => exercise.uid !== updatedExercise.uid
-                  );
-                  setSavedExercises(updatedExercises);
-                } else {
-                  const updatedExercises = savedExercises.map((exercise) =>
-                    exercise.uid === updatedExercise.uid
-                      ? updatedExercise
-                      : exercise
-                  );
-                  setSavedExercises(updatedExercises);
-                }
-              }}
-            />
-          </MotionBox>
-        ))}
-      </AnimatePresence>
+            <FormControl>
+              <FormLabel>Comment</FormLabel>
+              <Input
+                name="comment"
+                type="text"
+                value={workoutState.comment}
+                onChange={handleWorkoutChange}
+              />
+            </FormControl>
+          </HStack>
+          <br />
+
+          <HStack w="100%" mt="1rem" mb="2rem" justifyContent={"space-between"}>
+            <Button onClick={addNewExercise}>Add Exercise</Button>
+            <Button
+              isDisabled={
+                savedExercises.length < 1 ||
+                !savedExercises.every(
+                  (exercise) => !validateExerciseFormFields(exercise)
+                )
+              }
+              onClick={handleValidateAndSaveWorkout}
+            >
+              Save Workout
+            </Button>
+          </HStack>
+
+          <AnimatePresence>
+            {savedExercises.map((savedExercise) => (
+              <MotionBox
+                key={savedExercise.uid}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <NewExercise
+                  key={savedExercise.uid}
+                  exercise={savedExercise}
+                  setSavedExercises={(updatedExercise, action) => {
+                    if (action === "delete") {
+                      const updatedExercises = savedExercises.filter(
+                        (exercise) => exercise.uid !== updatedExercise.uid
+                      );
+                      setSavedExercises(updatedExercises);
+                    } else {
+                      const updatedExercises = savedExercises.map((exercise) =>
+                        exercise.uid === updatedExercise.uid
+                          ? updatedExercise
+                          : exercise
+                      );
+                      setSavedExercises(updatedExercises);
+                    }
+                  }}
+                />
+              </MotionBox>
+            ))}
+          </AnimatePresence>
+        </>
+      )}
     </Container>
   );
 }
