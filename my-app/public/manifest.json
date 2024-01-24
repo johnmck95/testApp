@@ -3,9 +3,9 @@
   "name": "Kettlebell Workout Tracker",
   "icons": [
     {
-      "src": "kettlbell.svg",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/svg+xml"
+      "src": "kettlbell.png",
+      "sizes": "32x32",
+      "type": "image/x-icon"
     }
   ],
   "start_url": ".",
