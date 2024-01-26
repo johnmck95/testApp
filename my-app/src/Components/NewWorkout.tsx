@@ -77,7 +77,7 @@ export default function NewWorkout({
       setSavedExercises([]);
     };
     initializeState();
-  }, []);
+  }, [workoutWithExercises]);
 
   function handleWorkoutChange(event: ChangeEvent<HTMLInputElement>): void {
     const { name, value } = event.target;
