@@ -16,15 +16,14 @@ export type ExerciseType = {
   isEmom: boolean;
   isLadder: boolean;
   reps: string;
-  sets: number | null;
+  sets: number | undefined;
   title: string;
   uid: string;
   workoutUid: string;
-  weight: number | null;
+  weight: number | undefined;
   weightUnit: string;
 };
 
 export type WorkoutWithExercisesType = WorkoutType & {
   exercises: ExerciseType[];
-  docUid?: string;
 };

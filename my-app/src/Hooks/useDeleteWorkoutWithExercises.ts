@@ -8,6 +8,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { WorkoutWithExercisesType } from "../Types/types";
+import { deleteExerciseFromDB } from "../Functions/Helpers";
 
 function useDeleteWorkoutWithExercises() {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -19,19 +20,10 @@ function useDeleteWorkoutWithExercises() {
 
     try {
       const db = getFirestore();
-      const exercisesCollection = collection(db, "exercises");
       const workoutsCollection = collection(db, "workouts");
 
       for (const exercise of workoutWithExercises.exercises) {
-        const exercisesQuery = query(
-          exercisesCollection,
-          where("uid", "==", exercise.uid)
-        );
-        const exerciseQuerySnapshot = await getDocs(exercisesQuery);
-
-        exerciseQuerySnapshot.forEach(async (doc) => {
-          await deleteDoc(doc.ref);
-        });
+        await deleteExerciseFromDB(exercise);
       }
 
       const workoutQuery = query(

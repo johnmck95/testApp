@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { safeToSendWorkoutAndExercisesToDB } from "../Functions/FormValidation";
-import { sendNewWorkoutWithExercisesToDB } from "../Functions/Helpers";
+import {
+  mutateExistingWorkoutWithExercisesToDB,
+  sendNewWorkoutWithExercisesToDB,
+} from "../Functions/Helpers";
 import { ExerciseType, WorkoutType } from "../Types/types";
 
 const useValidateAndSaveWorkout = () => {
@@ -10,7 +13,8 @@ const useValidateAndSaveWorkout = () => {
     workoutState: WorkoutType,
     savedExercises: ExerciseType[],
     setShowNewWorkout: (val: boolean) => void,
-    loggedInUser: any
+    loggedInUser: any,
+    editingAnExistingWorkout: boolean
   ) => {
     setIsSaving(true);
 
@@ -18,11 +22,19 @@ const useValidateAndSaveWorkout = () => {
       const passOrFail = await safeToSendWorkoutAndExercisesToDB(
         workoutState,
         savedExercises,
-        loggedInUser
+        loggedInUser,
+        editingAnExistingWorkout
       );
 
       if (passOrFail.dataIsSafe) {
-        await sendNewWorkoutWithExercisesToDB(workoutState, savedExercises);
+        if (editingAnExistingWorkout) {
+          await mutateExistingWorkoutWithExercisesToDB(
+            workoutState,
+            savedExercises
+          );
+        } else {
+          await sendNewWorkoutWithExercisesToDB(workoutState, savedExercises);
+        }
         setShowNewWorkout(false);
       } else {
         console.log(`DB Write failed: ${passOrFail.reason}`);

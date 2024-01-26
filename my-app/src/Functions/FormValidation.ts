@@ -40,7 +40,8 @@ export function validateWorkoutDate(workout: WorkoutType): boolean {
 export async function safeToSendWorkoutAndExercisesToDB(
   workout: WorkoutType,
   exercises: ExerciseType[],
-  loggedInUser: any
+  loggedInUser: any,
+  editingAnExistingWorkout: boolean
 ): Promise<{ dataIsSafe: boolean; reason: string }> {
   let result;
   let uids = [];
@@ -118,13 +119,16 @@ export async function safeToSendWorkoutAndExercisesToDB(
 
   uids = uids.filter((uid) => uid !== workout.userUid);
 
-  for (const uid of uids) {
-    if (await checkUidExists(uid)) {
-      result = {
-        dataIsSafe: false,
-        reason: `${uid} already exists somewhere in the database`,
-      };
-      return result;
+  // Only check for unique UIDs if it is a new workout
+  if (!editingAnExistingWorkout) {
+    for (const uid of uids) {
+      if (await checkUidExists(uid)) {
+        result = {
+          dataIsSafe: false,
+          reason: `${uid} already exists somewhere in the database`,
+        };
+        return result;
+      }
     }
   }
 

@@ -9,7 +9,11 @@ import {
   Box,
   Flex,
 } from "@chakra-ui/react";
-import { ExerciseType, WorkoutType } from "../Types/types";
+import {
+  ExerciseType,
+  WorkoutType,
+  WorkoutWithExercisesType,
+} from "../Types/types";
 import FirebaseContext from "../App";
 import NewExercise from "./NewExercise";
 import {
@@ -44,23 +48,30 @@ async function generateUid(): Promise<string> {
 
 export default function NewWorkout({
   setShowNewWorkout,
+  workoutWithExercises,
 }: {
   setShowNewWorkout: (val: boolean) => void;
+  workoutWithExercises?: WorkoutWithExercisesType;
 }) {
   const { validateAndSaveWorkout, isSaving } = useValidateAndSaveWorkout();
   const { loggedInUser } = React.useContext(FirebaseContext);
   const [workoutState, setWorkoutState] = React.useState<WorkoutType>({
-    comment: "",
-    date: getCurrentDate(),
-    uid: "",
-    userUid: loggedInUser.uid,
+    comment: workoutWithExercises?.comment ?? "",
+    date:
+      workoutWithExercises?.date.toDate().toISOString().substring(0, 10) ??
+      getCurrentDate(),
+    uid: workoutWithExercises?.uid ?? "",
+    userUid: workoutWithExercises?.userUid ?? loggedInUser.uid,
   });
   const [savedExercises, setSavedExercises] = React.useState<ExerciseType[]>(
-    []
+    workoutWithExercises?.exercises ?? []
   );
 
   React.useEffect(() => {
     const initializeState = async () => {
+      if (workoutWithExercises) {
+        return;
+      }
       const workoutUid = await generateUid();
       setWorkoutState((prev) => ({ ...prev, uid: workoutUid }));
       setSavedExercises([]);
@@ -77,11 +88,14 @@ export default function NewWorkout({
   }
 
   const handleValidateAndSaveWorkout = () => {
+    const editingAnExistingWorkout = workoutWithExercises ? true : false;
+
     validateAndSaveWorkout(
       workoutState,
       savedExercises,
       setShowNewWorkout,
-      loggedInUser
+      loggedInUser,
+      editingAnExistingWorkout
     );
   };
 
@@ -92,11 +106,11 @@ export default function NewWorkout({
       isEmom: false,
       isLadder: false,
       reps: "",
-      sets: null,
+      sets: undefined,
       title: "",
       uid: newExerciseUid,
       workoutUid: workoutState.uid,
-      weight: null,
+      weight: undefined,
       weightUnit: "kg",
     };
     setSavedExercises((prevExercises) => [newExercise, ...prevExercises]);
@@ -149,7 +163,6 @@ export default function NewWorkout({
           <br />
 
           <HStack w="100%" mt="1rem" mb="2rem" justifyContent={"space-between"}>
-            <Button onClick={addNewExercise}>Add Exercise</Button>
             <Button
               isDisabled={
                 savedExercises.length < 1 ||
@@ -161,6 +174,7 @@ export default function NewWorkout({
             >
               Save Workout
             </Button>
+            <Button onClick={addNewExercise}>Add Exercise</Button>
           </HStack>
 
           <AnimatePresence>

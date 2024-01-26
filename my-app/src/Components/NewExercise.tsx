@@ -27,6 +27,7 @@ import {
   validateEmomAndLadder,
   validateExerciseFormFields,
 } from "../Functions/FormValidation";
+import { deleteExerciseFromDB } from "../Functions/Helpers";
 
 export default function NewExercise({
   exercise,
@@ -87,6 +88,7 @@ export default function NewExercise({
 
   const confirmDelete = () => {
     setSavedExercises(exercise, "delete");
+    deleteExerciseFromDB(exercise);
     onClose();
   };
 

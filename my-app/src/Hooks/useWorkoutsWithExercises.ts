@@ -68,14 +68,16 @@ const useWorkoutsWithExercises = (userUid: string) => {
       }
     };
 
-    const unsubscribe = onSnapshot(workoutsQuery, (snapshot) => {
+    const unsubscribe = onSnapshot(workoutsQuery, () => {
       fetchWorkoutsAndExercises();
     });
 
     return () => {
       unsubscribe();
     };
-  }, [userUid]);
+    // Hack to trigger exercise refetch. Need workoutUid for the exerciseQuery to
+    // put in the onSnapshot call, but that requires an async fetch first.
+  }, [userUid, workoutsWithExercises]);
 
   return { workoutsWithExercises, isLoading };
 };
