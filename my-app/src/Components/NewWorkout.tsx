@@ -140,8 +140,9 @@ export default function NewWorkout({
         <>
           <HStack w="100%" alignItems={"flex-end"}>
             <FormControl>
-              <FormLabel>Workout Date</FormLabel>
+              <FormLabel fontSize={["sm", "lg"]}>Workout Date</FormLabel>
               <Input
+                size={["sm", "lg"]}
                 name="date"
                 type="date"
                 maxW="180px"
@@ -151,8 +152,9 @@ export default function NewWorkout({
             </FormControl>
 
             <FormControl>
-              <FormLabel>Comment</FormLabel>
+              <FormLabel fontSize={["sm", "lg"]}>Comment</FormLabel>
               <Input
+                size={["sm", "lg"]}
                 name="comment"
                 type="text"
                 value={workoutState.comment}
@@ -162,8 +164,9 @@ export default function NewWorkout({
           </HStack>
           <br />
 
-          <HStack w="100%" mt="1rem" mb="2rem" justifyContent={"space-between"}>
+          <HStack w="100%" mb="0.5rem" justifyContent={"space-around"}>
             <Button
+              size={["sm", "lg"]}
               isDisabled={
                 savedExercises.length < 1 ||
                 !savedExercises.every(
@@ -174,7 +177,9 @@ export default function NewWorkout({
             >
               Save Workout
             </Button>
-            <Button onClick={addNewExercise}>Add Exercise</Button>
+            <Button size={["sm", "lg"]} onClick={addNewExercise}>
+              Add Exercise
+            </Button>
           </HStack>
 
           <AnimatePresence>

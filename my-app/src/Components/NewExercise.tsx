@@ -106,20 +106,22 @@ export default function NewExercise({
         isInvalid={submittedForm && !validateStringField(exerciseState.title)}
       >
         <HStack justifyContent={"space-between"} w="100%">
-          <FormLabel>Exercise</FormLabel>
+          <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+            Exercise
+          </FormLabel>
           <IconButton
             aria-label="Close"
             icon={<BsXSquareFill />}
-            size="md"
+            size={["sm", "lg"]}
             variant="ghost"
             onClick={onOpen}
           />
         </HStack>
         <Input
+          size={["sm", "lg"]}
           isRequired
           name="title"
           type="text"
-          maxW="300px"
           value={exerciseState.title}
           onChange={handleExerciseInputChange}
           isDisabled={!formIsEditable}
@@ -134,8 +136,11 @@ export default function NewExercise({
               submittedForm && !validateNumericalField(exerciseState.sets!)
             }
           >
-            <FormLabel>Sets</FormLabel>
+            <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+              Sets
+            </FormLabel>
             <Input
+              size={["sm", "lg"]}
               name="sets"
               type="number"
               value={exerciseState.sets!}
@@ -150,8 +155,11 @@ export default function NewExercise({
               submittedForm && !validateStringField(exerciseState.reps)
             }
           >
-            <FormLabel>Reps</FormLabel>
+            <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+              Reps
+            </FormLabel>
             <Input
+              size={["sm", "lg"]}
               name="reps"
               type="text"
               value={exerciseState.reps}
@@ -170,8 +178,11 @@ export default function NewExercise({
               submittedForm && !validateNumericalField(exerciseState.weight!)
             }
           >
-            <FormLabel>Weight</FormLabel>
+            <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+              Weight
+            </FormLabel>
             <Input
+              size={["sm", "lg"]}
               name="weight"
               id="weight"
               type="number"
@@ -182,6 +193,7 @@ export default function NewExercise({
           </FormControl>
           <FormControl as="span">
             <Select
+              size={["sm", "lg"]}
               name="weightUnit"
               maxW="100px"
               value={exerciseState.weightUnit}
@@ -203,9 +215,12 @@ export default function NewExercise({
       >
         <HStack my="0.5rem">
           <FormControl mr="2.5rem">
-            <FormLabel>EMOM</FormLabel>
+            <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+              EMOM
+            </FormLabel>
             <span>False </span>
             <Switch
+              size={["sm", "lg"]}
               name="isEmom"
               id="isEmom"
               onChange={() => handleExerciseSwitchChange("isEmom")}
@@ -216,9 +231,12 @@ export default function NewExercise({
           </FormControl>
 
           <FormControl>
-            <FormLabel>Ladder</FormLabel>
+            <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+              Ladder
+            </FormLabel>
             <span>False </span>
             <Switch
+              size={["sm", "lg"]}
               name="isLadder"
               id="isLadder"
               onChange={() => handleExerciseSwitchChange("isLadder")}
@@ -231,10 +249,13 @@ export default function NewExercise({
         <FormErrorMessage>You cannot select EMOM and Ladder</FormErrorMessage>
       </FormControl>
 
-      <HStack>
+      <HStack w="100%">
         <FormControl>
-          <FormLabel>Comment</FormLabel>
+          <FormLabel mb="0px" fontSize={["sm", "lg"]}>
+            Comment
+          </FormLabel>
           <Input
+            size={["sm", "lg"]}
             name="comment"
             type="text"
             value={exerciseState.comment}

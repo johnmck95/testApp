@@ -77,12 +77,16 @@ export default function Workout({
             <HStack pb="10px">
               <IconButton
                 aria-label="Edit Workout"
+                size={["xs", "sm"]}
                 icon={<MdCreate />}
+                mt="0.25rem"
                 onClick={editWorkout}
               ></IconButton>
               <IconButton
+                size={["xs", "sm"]}
                 aria-label="Delete Workout"
                 icon={<MdDelete />}
+                mt="0.25rem"
                 onClick={onOpen}
               ></IconButton>
             </HStack>
