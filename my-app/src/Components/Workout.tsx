@@ -62,6 +62,7 @@ export default function Workout({
         <NewWorkout
           setShowNewWorkout={setShowNewWorkout}
           workoutWithExercises={workoutWithExercises}
+          openExerciseUnEditable={true}
         />
       ) : (
         <>

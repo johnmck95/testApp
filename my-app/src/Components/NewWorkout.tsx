@@ -27,6 +27,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { validateExerciseFormFields } from "../Functions/FormValidation";
 import useValidateAndSaveWorkout from "../Hooks/useValidateAndSaveWorkout";
 import LoadingSpinner from "./LoadingSpinner";
+import useWorkoutsWithExercises from "../Hooks/useWorkoutsWithExercises";
+import {
+  convertFrontendDateToTimestamp,
+  objectsEqual,
+} from "../Functions/Helpers";
 
 const MotionBox = motion(Box);
 
@@ -49,9 +54,11 @@ async function generateUid(): Promise<string> {
 export default function NewWorkout({
   setShowNewWorkout,
   workoutWithExercises,
+  openExerciseUnEditable,
 }: {
   setShowNewWorkout: (val: boolean) => void;
   workoutWithExercises?: WorkoutWithExercisesType;
+  openExerciseUnEditable?: boolean;
 }) {
   const { validateAndSaveWorkout, isSaving } = useValidateAndSaveWorkout();
   const { loggedInUser } = React.useContext(FirebaseContext);
@@ -66,6 +73,31 @@ export default function NewWorkout({
   const [savedExercises, setSavedExercises] = React.useState<ExerciseType[]>(
     workoutWithExercises?.exercises ?? []
   );
+  const { setWorkoutsWithExercises } = useWorkoutsWithExercises(
+    loggedInUser.uid
+  );
+  const [exercisesBeingEdited, setExercisesBeingEdited] = React.useState(
+    openExerciseUnEditable ? 0 : savedExercises.length
+  );
+  const onMountWorkoutWithExercises = React.useRef(workoutWithExercises);
+  function handleCancel() {
+    if (onMountWorkoutWithExercises.current !== undefined) {
+      setWorkoutsWithExercises([onMountWorkoutWithExercises.current]);
+    }
+    setShowNewWorkout(false);
+  }
+
+  function workoutWithExercisesChanged() {
+    const cur = {
+      comment: workoutState.comment,
+      date: convertFrontendDateToTimestamp(workoutState.date),
+      uid: workoutState.uid,
+      userUid: workoutState.userUid,
+      exercises: savedExercises,
+    };
+
+    return !objectsEqual(onMountWorkoutWithExercises.current, cur);
+  }
 
   React.useEffect(() => {
     const initializeState = async () => {
@@ -100,17 +132,20 @@ export default function NewWorkout({
   };
 
   const addNewExercise = async () => {
+    setExercisesBeingEdited(
+      (prevExercisesBeingEdited) => prevExercisesBeingEdited + 1
+    );
     const newExerciseUid = await generateUid();
     const newExercise: ExerciseType = {
       comment: "",
       isEmom: false,
       isLadder: false,
-      reps: "",
-      sets: undefined,
+      reps: "0",
+      sets: 0,
       title: "",
       uid: newExerciseUid,
       workoutUid: workoutState.uid,
-      weight: undefined,
+      weight: 0,
       weightUnit: "kg",
     };
     setSavedExercises((prevExercises) => [newExercise, ...prevExercises]);
@@ -169,14 +204,23 @@ export default function NewWorkout({
               size={["sm", "lg"]}
               isDisabled={
                 savedExercises.length < 1 ||
-                !savedExercises.every(
-                  (exercise) => !validateExerciseFormFields(exercise)
+                !workoutWithExercisesChanged() ||
+                exercisesBeingEdited !== 0 ||
+                savedExercises.some(
+                  (exercise) =>
+                    !validateExerciseFormFields(exercise).validExercise
                 )
               }
               onClick={handleValidateAndSaveWorkout}
             >
               Save Workout
             </Button>
+            {workoutWithExercises && (
+              <Button size={["sm", "lg"]} onClick={handleCancel}>
+                Cancel
+              </Button>
+            )}
+
             <Button size={["sm", "lg"]} onClick={addNewExercise}>
               Add Exercise
             </Button>
@@ -193,7 +237,9 @@ export default function NewWorkout({
               >
                 <NewExercise
                   key={savedExercise.uid}
+                  openExerciseUnEditable={openExerciseUnEditable}
                   exercise={savedExercise}
+                  setExercisesBeingEdited={setExercisesBeingEdited}
                   setSavedExercises={(updatedExercise, action) => {
                     if (action === "delete") {
                       const updatedExercises = savedExercises.filter(

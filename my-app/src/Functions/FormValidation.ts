@@ -1,34 +1,82 @@
+import { DocumentData, QuerySnapshot } from "firebase/firestore";
 import { ExerciseType, WorkoutType } from "../Types/types";
-import { checkUidExists } from "./Helpers";
-
-export function validateStringField(value: string): boolean {
-  return value.length > 0 ? true : false;
-}
-
-export function validateNumericalField(value: number): boolean {
-  return value > 0 ? true : false;
-}
+import { uidInSnapshot } from "./Helpers";
 
 export function validateEmomAndLadder(emom: boolean, ladder: boolean): boolean {
   const bothSelected = emom && ladder;
   return bothSelected;
 }
 
-// Returns true if title, reps, sets or weight missing, or is isEmom and isLadder both selected
-export function validateExerciseFormFields(exercise: ExerciseType): boolean {
-  const { title, sets, reps, weight, isEmom, isLadder } = exercise;
-  if (
-    !sets ||
-    !weight ||
-    !validateStringField(title) ||
-    !validateStringField(reps) ||
-    !validateNumericalField(sets!) ||
-    !validateNumericalField(weight!) ||
-    validateEmomAndLadder(isEmom, isLadder)
+export function validateExerciseFormFields(exercise: ExerciseType): {
+  validExercise: boolean;
+  reason: string;
+} {
+  const { title, sets, reps, weight, weightUnit, isEmom, isLadder } = exercise;
+  let result = {
+    validExercise: false,
+    reason: "initialized",
+  };
+  if (validateEmomAndLadder(isEmom, isLadder)) {
+    result = {
+      validExercise: false,
+      reason: "Cannot select EMOM and Ladder",
+    };
+    return result;
+  } else if (isEmom && (!reps || !sets || !weight || !weightUnit)) {
+    result = {
+      validExercise: false,
+      reason:
+        "EMOM selected. Reps, sets, weight and weightUnit must also be included.",
+    };
+    return result;
+  } else if (isLadder && (!reps || !sets || !weight || !weightUnit)) {
+    result = {
+      validExercise: false,
+      reason:
+        "Ladder selected. Reps, sets, weight and weightUnit must also be included.",
+    };
+    return result;
+  } else if (sets > 0 && (reps.length <= 0 || weightUnit.length <= 0)) {
+    result = {
+      validExercise: false,
+      reason:
+        "Sets are included. Reps, Weight and Weight Unit must be as well.",
+    };
+    return result;
+  } else if (reps.length > 0 && (sets <= 0 || weightUnit.length <= 0)) {
+    result = {
+      validExercise: false,
+      reason:
+        "Reps are included. Sets, Weight and Weight Unit must be as well.",
+    };
+    return result;
+  } else if (weightUnit.length > 0 && (reps.length <= 0 || sets <= 0)) {
+    result = {
+      validExercise: false,
+      reason: "Weight Unit selected. Sets, Reps and Weight must be as well.",
+    };
+    return result;
+  } else if (
+    weight > 0 &&
+    (reps.length <= 0 || sets <= 0 || weightUnit.length <= 0)
   ) {
-    return true;
+    result = {
+      validExercise: false,
+      reason: "Weight included. Sets, reps and Weight Unit must be as well.",
+    };
+    return result;
+  } else if (title.length <= 0) {
+    result = {
+      validExercise: false,
+      reason: "Exercise title must be defined.",
+    };
+    return result;
   } else {
-    return false;
+    result = {
+      validExercise: true,
+      reason: "",
+    };
+    return result;
   }
 }
 
@@ -37,25 +85,33 @@ export function validateWorkoutDate(workout: WorkoutType): boolean {
   return YYYYMMDDRegex.test(workout.date);
 }
 
-export async function safeToSendWorkoutAndExercisesToDB(
+export function safeToSendWorkoutAndExercisesToDB(
   workout: WorkoutType,
   exercises: ExerciseType[],
   loggedInUser: any,
-  editingAnExistingWorkout: boolean
-): Promise<{ dataIsSafe: boolean; reason: string }> {
+  editingAnExistingWorkout: boolean,
+  workoutsSnapshot: QuerySnapshot<DocumentData, DocumentData>,
+  exercisesSnapshot: QuerySnapshot<DocumentData, DocumentData>,
+  usersSnapshot: QuerySnapshot<DocumentData, DocumentData>
+): { dataIsSafe: boolean; reason: string } {
   let result;
   let uids = [];
 
   for (const exercise of exercises) {
-    if (validateExerciseFormFields(exercise)) {
+    const exerciseValidity = validateExerciseFormFields(exercise);
+    if (!exerciseValidity.validExercise) {
       result = {
         dataIsSafe: false,
-        reason: `${exercise} failed validateExerciseFormFields()`,
+        reason: `${exercise} is invalid: ${exerciseValidity.reason}`,
       };
       return result;
     }
 
-    if (exercise.weightUnit !== "lb" && exercise.weightUnit !== "kg") {
+    if (
+      exercise.weightUnit !== "lb" &&
+      exercise.weightUnit !== "kg" &&
+      exercise.weightUnit !== ""
+    ) {
       result = {
         dataIsSafe: false,
         reason: `${exercise} has invalid weightUnit`,
@@ -119,10 +175,13 @@ export async function safeToSendWorkoutAndExercisesToDB(
 
   uids = uids.filter((uid) => uid !== workout.userUid);
 
-  // Only check for unique UIDs if it is a new workout
   if (!editingAnExistingWorkout) {
     for (const uid of uids) {
-      if (await checkUidExists(uid)) {
+      if (
+        uidInSnapshot(uid, workoutsSnapshot) ||
+        uidInSnapshot(uid, exercisesSnapshot) ||
+        uidInSnapshot(uid, usersSnapshot)
+      ) {
         result = {
           dataIsSafe: false,
           reason: `${uid} already exists somewhere in the database`,

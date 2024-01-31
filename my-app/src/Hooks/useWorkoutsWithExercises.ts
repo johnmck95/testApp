@@ -75,11 +75,11 @@ const useWorkoutsWithExercises = (userUid: string) => {
     return () => {
       unsubscribe();
     };
-    // Hack to trigger exercise refetch. Need workoutUid for the exerciseQuery to
-    // put in the onSnapshot call, but that requires an async fetch first.
-  }, [userUid, workoutsWithExercises]);
+    // TODO: Need to fix this hook to make it refetch every time an exercise is updated
+    // currently only refetches when a workout updates
+  }, [userUid]);
 
-  return { workoutsWithExercises, isLoading };
+  return { workoutsWithExercises, setWorkoutsWithExercises, isLoading };
 };
 
 export default useWorkoutsWithExercises;

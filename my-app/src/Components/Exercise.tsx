@@ -4,20 +4,23 @@ import { ListIcon, ListItem, Grid, GridItem } from "@chakra-ui/react";
 import { MdCheckCircle } from "react-icons/md";
 
 function totalReps(exercise: ExerciseType): number {
-  const { sets, reps } = exercise;
+  const { sets, reps, isLadder } = exercise;
   const parsedReps: string[] = reps
     .replace(/[^0-9]/g, ",")
     .split(",")
     .filter((num) => num.length > 0);
 
-  const totalRepsPerSet: number = parsedReps.reduce((accumulated, number) => {
+  let totalRepsPerSet = parsedReps.reduce((accumulated, number) => {
     return accumulated + parseInt(number, 10);
   }, 0);
-  return sets! * totalRepsPerSet;
+
+  totalRepsPerSet = isLadder ? totalRepsPerSet * 2 : totalRepsPerSet;
+
+  return sets * totalRepsPerSet;
 }
 
 function workCapacity(exercise: ExerciseType): number {
-  return totalReps(exercise) * exercise.weight!;
+  return totalReps(exercise) * exercise.weight;
 }
 
 export default function Workout({ exercise }: { exercise: ExerciseType }) {
@@ -29,10 +32,22 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
   formattedComment +=
     formattedComment.length > 0 && comment ? `. ${comment}` : `${comment}`;
 
+  function formatTitle() {
+    if (weight && weightUnit) {
+      return `${title} (${weight + weightUnit})`;
+    } else {
+      return title;
+    }
+  }
+
   return (
     <ListItem fontSize={"xs"} w="100%" padding="0.25rem">
       <Grid
-        templateColumns="min-content 0.7fr 0.7fr 0.5fr 0.7fr 0.5fr"
+        templateColumns={
+          sets && reps
+            ? "min-content 0.7fr 0.7fr 0.5fr 0.7fr 0.5fr"
+            : "min-content 1fr 1fr"
+        }
         gap={2}
         w="100%"
       >
@@ -40,17 +55,21 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
           <ListIcon as={MdCheckCircle} color="green.500" />
         </GridItem>
 
-        <GridItem minHeight="2rem">{`${title} (${
-          weight + weightUnit
-        })`}</GridItem>
+        <GridItem minHeight="2rem">{formatTitle()}</GridItem>
 
-        <GridItem minHeight="2rem">{`${sets}x${reps}`}</GridItem>
+        {sets && reps && (
+          <GridItem minHeight="2rem">{`${sets}x${reps}`}</GridItem>
+        )}
 
-        <GridItem minHeight="2rem">{`${totalReps(exercise)} reps`}</GridItem>
+        {sets && reps && (
+          <GridItem minHeight="2rem">{`${totalReps(exercise)} reps`}</GridItem>
+        )}
 
-        <GridItem minHeight="2rem">{`${workCapacity(
-          exercise
-        )} ${weightUnit} WC`}</GridItem>
+        {sets && reps && (
+          <GridItem minHeight="2rem">{`${workCapacity(
+            exercise
+          )} ${weightUnit} WC`}</GridItem>
+        )}
 
         <GridItem minHeight="2rem">{formattedComment}</GridItem>
       </Grid>

@@ -10,6 +10,7 @@ import {
   CollectionReference,
   DocumentData,
   deleteDoc,
+  QuerySnapshot,
 } from "firebase/firestore";
 import { ExerciseType, WorkoutType } from "../Types/types";
 
@@ -20,35 +21,32 @@ export const convertFrontendDateToTimestamp = (frontendDate: string) => {
   return timestamp;
 };
 
-export async function checkUidExists(uid: string): Promise<boolean> {
+export async function getCollectionSnapshotByName(
+  collectionName: string
+): Promise<QuerySnapshot<DocumentData, DocumentData>> {
   const db = getFirestore();
+  const collectionRef = collection(db, collectionName);
+  const q = query(collectionRef);
+  const snapshot = await getDocs(q);
+  return snapshot;
+}
 
-  // Check 'workouts' collection
-  const workoutsCollection = collection(db, "workouts");
-  const workoutsQuery = query(workoutsCollection, where("uid", "==", uid));
-  const workoutsSnapshot = await getDocs(workoutsQuery);
-  if (!workoutsSnapshot.empty) {
-    return true;
-  }
+export function uidInSnapshot(
+  uid: string,
+  snapshot: QuerySnapshot<DocumentData, DocumentData>
+): boolean {
+  const snapshotUids = snapshot.docs.map((doc) => doc.data().uid);
+  return snapshotUids.includes(uid);
 
-  // Check 'users' collection
-  const usersCollection = collection(db, "users");
-  const usersQuery = query(usersCollection, where("uid", "==", uid));
-  const usersSnapshot = await getDocs(usersQuery);
-  if (!usersSnapshot.empty) {
-    return true;
-  }
-
-  // Check 'exercises' collection
-  const exercisesCollection = collection(db, "exercises");
-  const exercisesQuery = query(exercisesCollection, where("uid", "==", uid));
-  const exercisesSnapshot = await getDocs(exercisesQuery);
-  if (!exercisesSnapshot.empty) {
-    return true;
-  }
-
-  // UID not found in any collection
-  return false;
+  // if (!snapshot.empty) {
+  //   snapshot.forEach((doc) => {
+  //     const data = doc.data();
+  //     if (data.uid === uid) {
+  //       return true;
+  //     }
+  //   });
+  // }
+  // return false;
 }
 
 async function addExerciseToDB(
@@ -63,21 +61,21 @@ async function addExerciseToDB(
 }
 
 async function mutateExerciseInDB(
-  exercisesCollection: CollectionReference<DocumentData, DocumentData>,
+  exercisesSnapshot: QuerySnapshot<DocumentData, DocumentData>,
   exercise: ExerciseType
 ) {
   try {
-    const exerciseQuery = query(
-      exercisesCollection,
-      where("uid", "==", exercise.uid)
-    );
-    const exerciseQuerySnapshot = await getDocs(exerciseQuery);
-
-    return exerciseQuerySnapshot.forEach(async (doc) => {
-      await setDoc(doc.ref, exercise);
-    });
+    const docs = exercisesSnapshot.docs;
+    for (const doc of docs) {
+      const data = doc.data();
+      if (data && data.uid === exercise.uid) {
+        await setDoc(doc.ref, exercise);
+      }
+    }
   } catch (e) {
-    console.log(`Failed to write ${exercise} to DB with error: ${e}`);
+    console.log(
+      `Failed to mutate ${exercise} in DB collection with error: ${e}`
+    );
   }
 }
 
@@ -122,7 +120,8 @@ export async function sendNewWorkoutWithExercisesToDB(
 
 export async function mutateExistingWorkoutWithExercisesToDB(
   workout: WorkoutType,
-  exercises: ExerciseType[]
+  exercises: ExerciseType[],
+  exercisesSnapshot: QuerySnapshot<DocumentData, DocumentData>
 ) {
   try {
     const db = getFirestore();
@@ -140,14 +139,45 @@ export async function mutateExistingWorkoutWithExercisesToDB(
       await setDoc(doc.ref, workoutBackend);
     });
 
+    // const snapshotUids = exercisesSnapshot.docs.map((doc) => doc.data().uid);
+
     const exerciseCollection = collection(db, "exercises");
     for (const exercise of exercises) {
-      const exerciseExists = await checkUidExists(exercise.uid);
-      exerciseExists
-        ? mutateExerciseInDB(exerciseCollection, exercise)
-        : addExerciseToDB(exerciseCollection, exercise);
+      uidInSnapshot(exercise.uid, exercisesSnapshot)
+        ? await mutateExerciseInDB(exercisesSnapshot, exercise)
+        : await addExerciseToDB(exerciseCollection, exercise);
     }
   } catch (e) {
     console.error("Error editing workoutWithExercises:", e);
   }
+}
+
+export function objectsEqual(obj1: any, obj2: any) {
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  if (
+    typeof obj1 !== "object" ||
+    typeof obj2 !== "object" ||
+    obj1 === null ||
+    obj2 === null
+  ) {
+    return false;
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !objectsEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+
+  return true;
 }
