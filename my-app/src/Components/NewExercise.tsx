@@ -22,7 +22,6 @@ import {
 } from "@chakra-ui/react";
 import { BsXSquareFill } from "react-icons/bs";
 import {
-  // validateStringField,
   validateEmomAndLadder,
   validateExerciseFormFields,
 } from "../Functions/FormValidation";

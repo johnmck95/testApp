@@ -1,7 +1,7 @@
 import React from "react";
 import { ExerciseType } from "../Types/types";
 import { ListIcon, ListItem, Grid, GridItem } from "@chakra-ui/react";
-import { MdCheckCircle } from "react-icons/md";
+import { MdCheckCircle, MdAccessTime } from "react-icons/md";
 
 function totalReps(exercise: ExerciseType): number {
   const { sets, reps, isLadder } = exercise;
@@ -24,6 +24,7 @@ function workCapacity(exercise: ExerciseType): number {
 }
 
 export default function Workout({ exercise }: { exercise: ExerciseType }) {
+  const [isCompleted, setIsCompleted] = React.useState(true);
   const { title, sets, reps, weight, weightUnit, isEmom, isLadder, comment } =
     exercise;
 
@@ -52,7 +53,23 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
         w="100%"
       >
         <GridItem minHeight="2rem">
-          <ListIcon as={MdCheckCircle} color="green.500" />
+          {isCompleted ? (
+            <ListIcon
+              as={MdCheckCircle}
+              color="green.500"
+              onClick={() =>
+                setIsCompleted((prevIsComplete) => !prevIsComplete)
+              }
+            />
+          ) : (
+            <ListIcon
+              as={MdAccessTime}
+              color="yellow.400"
+              onClick={() =>
+                setIsCompleted((prevIsComplete) => !prevIsComplete)
+              }
+            />
+          )}
         </GridItem>
 
         <GridItem minHeight="2rem">{formatTitle()}</GridItem>
