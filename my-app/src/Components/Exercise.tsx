@@ -42,14 +42,14 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
   }
 
   return (
-    <ListItem fontSize={"xs"} w="100%" padding="0.25rem">
+    <ListItem fontSize={"xs"} w="100%" padding={["0.15rem", "2rem"]}>
       <Grid
         templateColumns={
           sets && reps
             ? "min-content 0.7fr 0.7fr 0.5fr 0.7fr 0.5fr"
             : "min-content 1fr 1fr"
         }
-        gap={2}
+        gap={[0.5, 1]}
         w="100%"
       >
         <GridItem minHeight="2rem">
