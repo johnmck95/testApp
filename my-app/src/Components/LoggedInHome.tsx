@@ -1,5 +1,4 @@
 import React from "react";
-import FirebaseContext from "../App";
 import {
   Button,
   Heading,
