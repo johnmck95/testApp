@@ -54,9 +54,10 @@ export default function Workout({
     <Box
       borderRadius="10px"
       boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
-      w="100%"
-      my="1rem"
+      my="0.75rem"
+      maxW="700px"
       padding={["0.25rem", "0.5rem"]}
+      w={["100%", "100%", "90%", "80%"]}
     >
       {showNewWorkout ? (
         <NewWorkout
@@ -66,9 +67,9 @@ export default function Workout({
         />
       ) : (
         <>
-          <HStack justifyContent={"space-between"} mx={["0.5rem", "1rem"]}>
-            <Flex w="100%" alignItems="flex-end" py="0.5rem">
-              <Heading fontSize={["sm", "md"]} mr="1rem">
+          <HStack mx={["0.5rem", "1rem"]}>
+            <Flex w="100%" py="0.5rem">
+              <Heading fontSize={["sm", "md"]} mr={["0.25rem", "1rem"]}>
                 {formatDate(workoutWithExercises.date.toDate())}
               </Heading>
               <Heading as="h4" fontSize="xs" color="gray.600">

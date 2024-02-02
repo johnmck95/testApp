@@ -1,6 +1,6 @@
 import React from "react";
 import { ExerciseType } from "../Types/types";
-import { ListIcon, ListItem, Grid, GridItem } from "@chakra-ui/react";
+import { ListIcon, ListItem, Text, Box, Flex } from "@chakra-ui/react";
 import { MdCheckCircle, MdAccessTime } from "react-icons/md";
 
 function totalReps(exercise: ExerciseType): number {
@@ -35,61 +35,68 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
 
   function formatTitle() {
     if (weight && weightUnit) {
-      return `${title} (${weight + weightUnit})`;
+      return `${title} (${weight + weightUnit}):`;
     } else {
       return title;
     }
   }
 
   return (
-    <ListItem fontSize={"xs"} w="100%" padding={["0.15rem", "2rem"]}>
-      <Grid
-        templateColumns={
-          sets && reps
-            ? "min-content 0.7fr 0.7fr 0.5fr 0.7fr 0.5fr"
-            : "min-content 1fr 1fr"
-        }
-        gap={[0.5, 1]}
-        w="100%"
-      >
-        <GridItem minHeight="2rem">
-          {isCompleted ? (
-            <ListIcon
-              as={MdCheckCircle}
-              color="green.500"
-              onClick={() =>
-                setIsCompleted((prevIsComplete) => !prevIsComplete)
-              }
-            />
-          ) : (
-            <ListIcon
-              as={MdAccessTime}
-              color="yellow.500"
-              onClick={() =>
-                setIsCompleted((prevIsComplete) => !prevIsComplete)
-              }
-            />
+    <ListItem fontSize={"xs"} my="0px" py="0px">
+      <Flex minH="1.5rem" alignItems={"center"}>
+        {isCompleted ? (
+          <ListIcon
+            as={MdCheckCircle}
+            color="green.500"
+            onClick={() => setIsCompleted((prevIsComplete) => !prevIsComplete)}
+          />
+        ) : (
+          <ListIcon
+            as={MdAccessTime}
+            color="yellow.500"
+            onClick={() => setIsCompleted((prevIsComplete) => !prevIsComplete)}
+          />
+        )}
+
+        <Box
+          display="flex"
+          overflowX="scroll"
+          whiteSpace="nowrap"
+          css={{
+            "::-webkit-scrollbar": {
+              width: "0",
+              height: "0",
+              background: "transparent",
+            },
+          }}
+        >
+          <Text fontSize="sm" fontWeight={"600"} mr="0.25rem">
+            {formatTitle()}
+          </Text>
+
+          {sets && reps && (
+            <Text
+              fontSize="sm"
+              fontWeight={"500"}
+              mr="1rem"
+            >{`${sets}x${reps}`}</Text>
           )}
-        </GridItem>
 
-        <GridItem minHeight="2rem">{formatTitle()}</GridItem>
+          {sets && reps && (
+            <Text fontSize="sm" mr="0.75rem">{`${totalReps(
+              exercise
+            )} total reps,`}</Text>
+          )}
 
-        {sets && reps && (
-          <GridItem minHeight="2rem">{`${sets}x${reps}`}</GridItem>
-        )}
+          {sets && reps && (
+            <Text fontSize="sm" mr="0.75rem">{`${workCapacity(
+              exercise
+            )} ${weightUnit} WC,`}</Text>
+          )}
 
-        {sets && reps && (
-          <GridItem minHeight="2rem">{`${totalReps(exercise)} reps`}</GridItem>
-        )}
-
-        {sets && reps && (
-          <GridItem minHeight="2rem">{`${workCapacity(
-            exercise
-          )} ${weightUnit} WC`}</GridItem>
-        )}
-
-        <GridItem minHeight="2rem">{formattedComment}</GridItem>
-      </Grid>
+          <Text fontSize="sm">{formattedComment}</Text>
+        </Box>
+      </Flex>
     </ListItem>
   );
 }

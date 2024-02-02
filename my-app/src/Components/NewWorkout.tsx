@@ -152,115 +152,125 @@ export default function NewWorkout({
   };
 
   return (
-    <Container
+    <Box
+      position="fixed"
+      top={["85", "50"]}
       w="100%"
-      display="flex"
-      flexDirection={"column"}
-      p="1rem 3rem 3rem 2rem"
-      borderRadius="10px"
-      padding="15px"
-      my="2rem"
-      boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
+      h={["calc(100% - 85px)", "calc(100% - 50px)"]}
+      overflow="auto"
+      bg="rgba(255, 255, 255, 0.4)"
     >
-      {isSaving ? (
-        <Flex
-          w="100%"
-          justifyContent={"center"}
-          alignItems={"center"}
-          my="5rem"
-        >
-          <LoadingSpinner />
-        </Flex>
-      ) : (
-        <>
-          <HStack w="100%" alignItems={"flex-end"}>
-            <FormControl>
-              <FormLabel fontSize={["sm", "lg"]}>Workout Date</FormLabel>
-              <Input
-                size={["sm", "lg"]}
-                name="date"
-                type="date"
-                maxW="180px"
-                value={workoutState.date}
-                onChange={handleWorkoutChange}
-              />
-            </FormControl>
-
-            <FormControl>
-              <FormLabel fontSize={["sm", "lg"]}>Comment</FormLabel>
-              <Input
-                size={["sm", "lg"]}
-                name="comment"
-                type="text"
-                value={workoutState.comment}
-                onChange={handleWorkoutChange}
-              />
-            </FormControl>
-          </HStack>
-          <br />
-
-          <HStack w="100%" mb="0.5rem" justifyContent={"space-around"}>
-            <Button
-              size={["sm", "lg"]}
-              isDisabled={
-                savedExercises.length < 1 ||
-                !workoutWithExercisesChanged() ||
-                exercisesBeingEdited !== 0 ||
-                savedExercises.some(
-                  (exercise) =>
-                    !validateExerciseFormFields(exercise).validExercise
-                )
-              }
-              onClick={handleValidateAndSaveWorkout}
-            >
-              Save Workout
-            </Button>
-            {workoutWithExercises && (
-              <Button size={["sm", "lg"]} onClick={handleCancel}>
-                Cancel
-              </Button>
-            )}
-
-            <Button size={["sm", "lg"]} onClick={addNewExercise}>
-              Add Exercise
-            </Button>
-          </HStack>
-
-          <AnimatePresence>
-            {savedExercises.map((savedExercise) => (
-              <MotionBox
-                key={savedExercise.uid}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <NewExercise
-                  key={savedExercise.uid}
-                  openExerciseUnEditable={openExerciseUnEditable}
-                  exercise={savedExercise}
-                  setExercisesBeingEdited={setExercisesBeingEdited}
-                  setSavedExercises={(updatedExercise, action) => {
-                    if (action === "delete") {
-                      const updatedExercises = savedExercises.filter(
-                        (exercise) => exercise.uid !== updatedExercise.uid
-                      );
-                      setSavedExercises(updatedExercises);
-                    } else {
-                      const updatedExercises = savedExercises.map((exercise) =>
-                        exercise.uid === updatedExercise.uid
-                          ? updatedExercise
-                          : exercise
-                      );
-                      setSavedExercises(updatedExercises);
-                    }
-                  }}
+      <Container
+        w="100%"
+        display="flex"
+        flexDirection={"column"}
+        p="1rem 3rem 3rem 2rem"
+        borderRadius="10px"
+        padding="15px"
+        my="2rem"
+        boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
+      >
+        {isSaving ? (
+          <Flex
+            w="100%"
+            justifyContent={"center"}
+            alignItems={"center"}
+            my="5rem"
+          >
+            <LoadingSpinner />
+          </Flex>
+        ) : (
+          <>
+            <HStack w="100%" alignItems={"flex-end"}>
+              <FormControl>
+                <FormLabel fontSize={["sm", "lg"]}>Workout Date</FormLabel>
+                <Input
+                  size={["sm", "lg"]}
+                  name="date"
+                  type="date"
+                  maxW="180px"
+                  value={workoutState.date}
+                  onChange={handleWorkoutChange}
                 />
-              </MotionBox>
-            ))}
-          </AnimatePresence>
-        </>
-      )}
-    </Container>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel fontSize={["sm", "lg"]}>Comment</FormLabel>
+                <Input
+                  size={["sm", "lg"]}
+                  name="comment"
+                  type="text"
+                  value={workoutState.comment}
+                  onChange={handleWorkoutChange}
+                />
+              </FormControl>
+            </HStack>
+            <br />
+
+            <HStack w="100%" mb="0.5rem" justifyContent={"space-around"}>
+              <Button
+                size={["sm", "lg"]}
+                isDisabled={
+                  savedExercises.length < 1 ||
+                  !workoutWithExercisesChanged() ||
+                  exercisesBeingEdited !== 0 ||
+                  savedExercises.some(
+                    (exercise) =>
+                      !validateExerciseFormFields(exercise).validExercise
+                  )
+                }
+                onClick={handleValidateAndSaveWorkout}
+              >
+                Save Workout
+              </Button>
+              {workoutWithExercises && (
+                <Button size={["sm", "lg"]} onClick={handleCancel}>
+                  Cancel
+                </Button>
+              )}
+
+              <Button size={["sm", "lg"]} onClick={addNewExercise}>
+                Add Exercise
+              </Button>
+            </HStack>
+
+            <AnimatePresence>
+              {savedExercises.map((savedExercise) => (
+                <MotionBox
+                  key={savedExercise.uid}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <NewExercise
+                    key={savedExercise.uid}
+                    openExerciseUnEditable={openExerciseUnEditable}
+                    exercise={savedExercise}
+                    setExercisesBeingEdited={setExercisesBeingEdited}
+                    setSavedExercises={(updatedExercise, action) => {
+                      if (action === "delete") {
+                        const updatedExercises = savedExercises.filter(
+                          (exercise) => exercise.uid !== updatedExercise.uid
+                        );
+                        setSavedExercises(updatedExercises);
+                      } else {
+                        const updatedExercises = savedExercises.map(
+                          (exercise) =>
+                            exercise.uid === updatedExercise.uid
+                              ? updatedExercise
+                              : exercise
+                        );
+                        setSavedExercises(updatedExercises);
+                      }
+                    }}
+                  />
+                </MotionBox>
+              ))}
+            </AnimatePresence>
+          </>
+        )}
+      </Container>
+    </Box>
   );
 }

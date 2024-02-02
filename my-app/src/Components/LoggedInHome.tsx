@@ -3,6 +3,7 @@ import FirebaseContext from "../App";
 import {
   Button,
   Heading,
+  Box,
   Flex,
   Modal,
   ModalOverlay,
@@ -12,6 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  HStack,
 } from "@chakra-ui/react";
 import { getAuth } from "firebase/auth";
 import ViewWorkouts from "./ViewWorkouts";
@@ -19,7 +21,6 @@ import NewWorkout from "./NewWorkout";
 const LoggedInHome = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showNewWorkout, setShowNewWorkout] = React.useState(false);
-  const { loggedInUser } = React.useContext(FirebaseContext);
   const auth = getAuth();
 
   function toggleViewWorkoutNewWorkout() {
@@ -37,25 +38,39 @@ const LoggedInHome = () => {
 
   return (
     <>
-      <Flex
+      <Box
         width="100%"
-        justifyContent={"space-between"}
-        alignItems={"center"}
+        position="sticky"
+        top="0px"
+        height={["85px", "50px"]}
         boxShadow={"0 0 15px rgba(0, 0, 0, 0.1)"}
         flexDirection={["column", "row"]}
       >
-        <Heading fontSize={["xl", "2xl"]} margin="5px">
-          Welcome, {loggedInUser.displayName}
-        </Heading>
-        <Flex>
-          <Button margin="5px" onClick={toggleViewWorkoutNewWorkout}>
-            {showNewWorkout ? "View Workouts" : "Record New Workout"}
-          </Button>
-          <Button margin="5px" onClick={() => auth.signOut()}>
-            Sign Out
-          </Button>
-        </Flex>
-      </Flex>
+        <HStack justifyContent={"center"} w="100%">
+          <Flex
+            flexDirection={["column", "row"]}
+            justifyContent={"space-around"}
+            alignItems={"center"}
+            mx={"1.5rem"}
+            w="100%"
+            maxW="720px"
+            my="0px"
+            py="0px"
+          >
+            <Heading fontSize={["xl", "2xl"]} my="0px">
+              KB Tracker
+            </Heading>
+            <Flex my="0px" py="0px">
+              <Button margin="5px" onClick={toggleViewWorkoutNewWorkout}>
+                {showNewWorkout ? "View Workouts" : "Record New Workout"}
+              </Button>
+              <Button margin="5px" onClick={() => auth.signOut()}>
+                Sign Out
+              </Button>
+            </Flex>
+          </Flex>
+        </HStack>
+      </Box>
       {showNewWorkout ? (
         <NewWorkout setShowNewWorkout={setShowNewWorkout} />
       ) : (
