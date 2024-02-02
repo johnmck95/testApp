@@ -64,7 +64,7 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
           ) : (
             <ListIcon
               as={MdAccessTime}
-              color="yellow.400"
+              color="yellow.500"
               onClick={() =>
                 setIsCompleted((prevIsComplete) => !prevIsComplete)
               }
