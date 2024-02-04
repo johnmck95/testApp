@@ -35,7 +35,7 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
 
   function formatTitle() {
     if (weight && weightUnit) {
-      return `${title} (${weight + weightUnit}):`;
+      return `${title} ${weight > 0 ? `(${weight + weightUnit})` : ""}:`;
     } else {
       return title;
     }
@@ -88,7 +88,7 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
             )} total reps,`}</Text>
           )}
 
-          {sets && reps && (
+          {sets && reps && workCapacity(exercise) > 0 && (
             <Text fontSize="sm" mr="0.75rem">{`${workCapacity(
               exercise
             )} ${weightUnit} WC,`}</Text>
