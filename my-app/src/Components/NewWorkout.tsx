@@ -153,8 +153,8 @@ export default function NewWorkout({
 
   return (
     <Box
-      position="fixed"
-      top={["85", "50"]}
+      position={workoutWithExercises ? "relative" : "fixed"}
+      top={workoutWithExercises ? "" : ["85", "50"]}
       w="100%"
       h={["calc(100% - 85px)", "calc(100% - 50px)"]}
       overflow="auto"
