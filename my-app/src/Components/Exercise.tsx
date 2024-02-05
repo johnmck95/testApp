@@ -85,13 +85,17 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
           {sets && reps && (
             <Text fontSize="sm" mr="0.75rem">{`${totalReps(
               exercise
-            )} total reps,`}</Text>
+            ).toLocaleString()} total reps${
+              isEmom || isLadder || comment ? "," : ""
+            }`}</Text>
           )}
 
           {sets && reps && workCapacity(exercise) > 0 && (
             <Text fontSize="sm" mr="0.75rem">{`${workCapacity(
               exercise
-            )} ${weightUnit} WC,`}</Text>
+            ).toLocaleString()} ${weightUnit} WC${
+              isEmom || isLadder || comment ? "," : ""
+            }`}</Text>
           )}
 
           <Text fontSize="sm">{formattedComment}</Text>

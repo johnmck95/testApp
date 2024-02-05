@@ -54,7 +54,7 @@ export default function Workout({
     <Box
       borderRadius="10px"
       boxShadow="0 0 10px rgba(0, 0, 0, 0.1)"
-      my="0.75rem"
+      my="0.15rem"
       maxW="700px"
       padding={["0.25rem", "0.5rem"]}
       w={["100%", "100%", "90%", "80%"]}
