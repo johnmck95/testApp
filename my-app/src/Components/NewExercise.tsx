@@ -109,6 +109,9 @@ export default function NewExercise({
     setExercisesBeingEdited(
       (prevExercisesBeingEdited: number) => prevExercisesBeingEdited - 1
     );
+    setExercisesBeingEdited(
+      (prevExerciseBeingEdited) => prevExerciseBeingEdited + 1
+    );
     onClose();
   };
 

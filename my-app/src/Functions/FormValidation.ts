@@ -96,6 +96,7 @@ export function safeToSendWorkoutAndExercisesToDB(
 ): { dataIsSafe: boolean; reason: string } {
   let result;
   let uids = [];
+  let indices = [];
 
   for (const exercise of exercises) {
     const exerciseValidity = validateExerciseFormFields(exercise);
@@ -136,6 +137,7 @@ export function safeToSendWorkoutAndExercisesToDB(
     }
 
     uids.push(exercise.uid);
+    indices.push(exercise.index);
   }
 
   if (!validateWorkoutDate(workout)) {
@@ -169,6 +171,14 @@ export function safeToSendWorkoutAndExercisesToDB(
     result = {
       dataIsSafe: false,
       reason: `non-unique uids detected`,
+    };
+    return result;
+  }
+
+  if (new Set(indices).size !== indices.length) {
+    result = {
+      dataIsSafe: false,
+      reason: `non-unique indices detected`,
     };
     return result;
   }

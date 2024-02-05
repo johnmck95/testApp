@@ -22,6 +22,7 @@ export type ExerciseType = {
   workoutUid: string;
   weight: number;
   weightUnit: string;
+  index: number;
 };
 
 export type WorkoutWithExercisesType = WorkoutType & {

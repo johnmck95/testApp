@@ -59,11 +59,13 @@ const useValidateAndSaveWorkout = () => {
     setShowNewWorkout: (val: boolean) => void,
     loggedInUser: any,
     editingAnExistingWorkout: boolean
-  ) => {
+  ): Promise<{ dataIsSafe: boolean; reason: string }> => {
     setIsSaving(true);
 
+    let passOrFail = { dataIsSafe: false, reason: "uninitialized" };
+
     try {
-      const passOrFail = safeToSendWorkoutAndExercisesToDB(
+      passOrFail = await safeToSendWorkoutAndExercisesToDB(
         workoutState,
         savedExercises,
         loggedInUser,
@@ -88,9 +90,13 @@ const useValidateAndSaveWorkout = () => {
         console.log(`DB Write failed: ${passOrFail.reason}`);
       }
     } catch (error) {
-      console.error("Error saving workout:", error);
+      passOrFail = {
+        dataIsSafe: false,
+        reason: `DB Write failed: ${error}`,
+      };
     } finally {
       setIsSaving(false);
+      return passOrFail;
     }
   };
 

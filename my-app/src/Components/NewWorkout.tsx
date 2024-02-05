@@ -8,6 +8,7 @@ import {
   Button,
   Box,
   Flex,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import {
   ExerciseType,
@@ -79,6 +80,11 @@ export default function NewWorkout({
   const [exercisesBeingEdited, setExercisesBeingEdited] = React.useState(
     openExerciseUnEditable ? 0 : savedExercises.length
   );
+  const [saveWorkoutResponse, setSaveWorkoutResponse] = React.useState({
+    dataIsSafe: false,
+    reason: "uninitialized",
+  });
+
   const onMountWorkoutWithExercises = React.useRef(workoutWithExercises);
   function handleCancel() {
     if (onMountWorkoutWithExercises.current !== undefined) {
@@ -119,22 +125,25 @@ export default function NewWorkout({
     }));
   }
 
-  const handleValidateAndSaveWorkout = () => {
+  const handleValidateAndSaveWorkout = async () => {
     const editingAnExistingWorkout = workoutWithExercises ? true : false;
 
-    validateAndSaveWorkout(
+    const passOrFail = await validateAndSaveWorkout(
       workoutState,
       savedExercises,
       setShowNewWorkout,
       loggedInUser,
       editingAnExistingWorkout
     );
+    setSaveWorkoutResponse(passOrFail);
   };
 
   const addNewExercise = async () => {
-    setExercisesBeingEdited(
-      (prevExercisesBeingEdited) => prevExercisesBeingEdited + 1
-    );
+    if (!openExerciseUnEditable) {
+      setExercisesBeingEdited(
+        (prevExercisesBeingEdited) => prevExercisesBeingEdited + 1
+      );
+    }
     const newExerciseUid = await generateUid();
     const newExercise: ExerciseType = {
       comment: "",
@@ -147,6 +156,7 @@ export default function NewWorkout({
       workoutUid: workoutState.uid,
       weight: 0,
       weightUnit: "kg",
+      index: savedExercises.length,
     };
     setSavedExercises((prevExercises) => [newExercise, ...prevExercises]);
   };
@@ -207,32 +217,42 @@ export default function NewWorkout({
             </HStack>
             <br />
 
-            <HStack w="100%" mb="0.5rem" justifyContent={"space-around"}>
-              <Button
-                size={["sm", "lg"]}
-                isDisabled={
-                  savedExercises.length < 1 ||
-                  !workoutWithExercisesChanged() ||
-                  exercisesBeingEdited !== 0 ||
-                  savedExercises.some(
-                    (exercise) =>
-                      !validateExerciseFormFields(exercise).validExercise
-                  )
-                }
-                onClick={handleValidateAndSaveWorkout}
-              >
-                Save Workout
-              </Button>
-              {workoutWithExercises && (
-                <Button size={["sm", "lg"]} onClick={handleCancel}>
-                  Cancel
+            <FormControl
+              isInvalid={
+                saveWorkoutResponse.dataIsSafe === false &&
+                saveWorkoutResponse.reason !== "uninitialized"
+              }
+            >
+              <HStack w="100%" mb="0.5rem" justifyContent={"space-around"}>
+                <Button
+                  size={["sm", "lg"]}
+                  isDisabled={
+                    savedExercises.length < 1 ||
+                    !workoutWithExercisesChanged() ||
+                    exercisesBeingEdited !== 0 ||
+                    savedExercises.some(
+                      (exercise) =>
+                        !validateExerciseFormFields(exercise).validExercise
+                    )
+                  }
+                  onClick={handleValidateAndSaveWorkout}
+                >
+                  Save Workout
                 </Button>
-              )}
+                {workoutWithExercises && (
+                  <Button size={["sm", "lg"]} onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                )}
 
-              <Button size={["sm", "lg"]} onClick={addNewExercise}>
-                Add Exercise
-              </Button>
-            </HStack>
+                <Button size={["sm", "lg"]} onClick={addNewExercise}>
+                  Add Exercise
+                </Button>
+              </HStack>
+              <FormErrorMessage mx="0.5rem">
+                {saveWorkoutResponse.reason}
+              </FormErrorMessage>
+            </FormControl>
 
             <AnimatePresence>
               {savedExercises.map((savedExercise) => (

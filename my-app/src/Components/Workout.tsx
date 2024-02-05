@@ -98,9 +98,11 @@ export default function Workout({
             <LoadingSpinner />
           ) : (
             <List w="100%">
-              {workoutWithExercises.exercises.map((exercise) => (
-                <Exercise key={exercise.uid} exercise={exercise} />
-              ))}
+              {workoutWithExercises.exercises
+                .sort((a, b) => a.index - b.index)
+                .map((exercise) => (
+                  <Exercise key={exercise.uid} exercise={exercise} />
+                ))}
             </List>
           )}
         </>
