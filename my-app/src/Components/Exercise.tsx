@@ -85,9 +85,7 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
           {sets && reps && (
             <Text fontSize="sm" mr="0.75rem">{`${totalReps(
               exercise
-            ).toLocaleString()} total reps${
-              isEmom || isLadder || comment ? "," : ""
-            }`}</Text>
+            ).toLocaleString()} total reps,`}</Text>
           )}
 
           {sets && reps && workCapacity(exercise) > 0 && (

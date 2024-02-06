@@ -20,7 +20,11 @@ import {
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
-import { BsXSquareFill } from "react-icons/bs";
+import {
+  BsXSquareFill,
+  BsFillCaretUpFill,
+  BsFillCaretDownFill,
+} from "react-icons/bs";
 import {
   validateEmomAndLadder,
   validateExerciseFormFields,
@@ -30,13 +34,17 @@ import { deleteExerciseFromDB } from "../Functions/Helpers";
 export default function NewExercise({
   openExerciseUnEditable,
   exercise,
+  savedExercisesLength,
   setSavedExercises,
   setExercisesBeingEdited,
+  bumpExerciseIndex,
 }: {
   openExerciseUnEditable?: boolean;
   exercise: ExerciseType;
+  savedExercisesLength: number;
   setSavedExercises: (updatedExercise: ExerciseType, action?: string) => void;
   setExercisesBeingEdited: React.Dispatch<React.SetStateAction<number>>;
+  bumpExerciseIndex: (upOrDown: "up" | "down", index: number) => void;
 }) {
   const [exerciseState, setExerciseState] =
     React.useState<ExerciseType>(exercise);
@@ -134,13 +142,33 @@ export default function NewExercise({
             <FormLabel mb="0px" fontSize={["sm", "lg"]}>
               Exercise
             </FormLabel>
-            <IconButton
-              aria-label="Close"
-              icon={<BsXSquareFill />}
-              size={["sm", "lg"]}
-              variant="ghost"
-              onClick={onOpen}
-            />
+
+            <HStack mb="1rem">
+              <IconButton
+                aria-label="Exercise-Up"
+                icon={<BsFillCaretUpFill />}
+                size={["xs", "sm"]}
+                variant="solid"
+                onClick={() => bumpExerciseIndex("up", exercise.index)}
+                isDisabled={exercise.index === 0}
+              />
+              <IconButton
+                aria-label="Exercise-Down"
+                icon={<BsFillCaretDownFill />}
+                size={["xs", "sm"]}
+                variant="solid"
+                onClick={() => bumpExerciseIndex("down", exercise.index)}
+                isDisabled={exercise.index === savedExercisesLength - 1}
+              />
+
+              <IconButton
+                aria-label="Close"
+                icon={<BsXSquareFill />}
+                size={["xs", "sm"]}
+                variant="solid"
+                onClick={onOpen}
+              />
+            </HStack>
           </HStack>
           <Input
             size={["sm", "lg"]}

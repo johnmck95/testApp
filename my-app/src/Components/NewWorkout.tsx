@@ -161,6 +161,38 @@ export default function NewWorkout({
     setSavedExercises((prevExercises) => [newExercise, ...prevExercises]);
   };
 
+  function bumpExerciseIndex(upOrDown: "up" | "down", index: number) {
+    if (index >= savedExercises.length) {
+      console.log("You passed an index to bumpExerciseIndex that is too high.");
+      return;
+    }
+
+    if (savedExercises.length <= 1) {
+      console.log("Cannot bump exercise up or down when the length is <= 1.");
+      return;
+    }
+
+    const bumpedExercises = [...savedExercises];
+
+    if (upOrDown === "down" && index < savedExercises.length - 1) {
+      [bumpedExercises[index], bumpedExercises[index + 1]] = [
+        bumpedExercises[index + 1],
+        bumpedExercises[index],
+      ];
+      bumpedExercises[index].index = index;
+      bumpedExercises[index + 1].index = index + 1;
+    } else if (upOrDown === "up" && index > 0) {
+      [bumpedExercises[index - 1], bumpedExercises[index]] = [
+        bumpedExercises[index],
+        bumpedExercises[index - 1],
+      ];
+      bumpedExercises[index].index = index;
+      bumpedExercises[index - 1].index = index - 1;
+    }
+
+    setSavedExercises(bumpedExercises);
+  }
+
   return (
     <Box
       position={workoutWithExercises ? "relative" : "fixed"}
@@ -267,6 +299,7 @@ export default function NewWorkout({
                     key={savedExercise.uid}
                     openExerciseUnEditable={openExerciseUnEditable}
                     exercise={savedExercise}
+                    savedExercisesLength={savedExercises.length ?? 0}
                     setExercisesBeingEdited={setExercisesBeingEdited}
                     setSavedExercises={(updatedExercise, action) => {
                       if (action === "delete") {
@@ -284,6 +317,7 @@ export default function NewWorkout({
                         setSavedExercises(updatedExercises);
                       }
                     }}
+                    bumpExerciseIndex={bumpExerciseIndex}
                   />
                 </MotionBox>
               ))}
