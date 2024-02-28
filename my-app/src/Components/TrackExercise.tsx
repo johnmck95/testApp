@@ -10,11 +10,11 @@ export default function TrackExercise({
   exercise: ExerciseType;
 }) {
   const dataAvailable = exercise.sets && exercise.reps;
-  const [setsCompleted, setSetsCompleted] = React.useState(() => {
+  const [setsCompleted, setSetsCompleted] = React.useState<number>(() => {
     const storedSetsCompleted = localStorage.getItem(exercise.uid);
     return storedSetsCompleted ? parseInt(storedSetsCompleted, 10) : 0;
   });
-  const setsInExercise = exercise.isLadder
+  const setsInExercise: number = exercise.isLadder
     ? totalLadderSets(exercise)
     : exercise.sets;
 
@@ -32,6 +32,7 @@ export default function TrackExercise({
 
   return (
     <HStack>
+      {/* eslint-disable-next-line eqeqeq */}
       {!dataAvailable || setsCompleted == setsInExercise ? (
         <Icon as={MdCheckCircle} color="green.500" />
       ) : (
