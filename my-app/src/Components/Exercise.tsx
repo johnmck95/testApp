@@ -1,30 +1,10 @@
 import React from "react";
 import { ExerciseType } from "../Types/types";
 import { ListIcon, ListItem, Text, Box, Flex } from "@chakra-ui/react";
-import { MdCheckCircle, MdAccessTime } from "react-icons/md";
-
-function totalReps(exercise: ExerciseType): number {
-  const { sets, reps, isLadder } = exercise;
-  const parsedReps: string[] = reps
-    .replace(/[^0-9]/g, ",")
-    .split(",")
-    .filter((num) => num.length > 0);
-
-  let totalRepsPerSet = parsedReps.reduce((accumulated, number) => {
-    return accumulated + parseInt(number, 10);
-  }, 0);
-
-  totalRepsPerSet = isLadder ? totalRepsPerSet * 2 : totalRepsPerSet;
-
-  return sets * totalRepsPerSet;
-}
-
-function workCapacity(exercise: ExerciseType): number {
-  return totalReps(exercise) * exercise.weight;
-}
+import { MdDone } from "react-icons/md";
+import { totalReps, workCapacity } from "../Functions/Helpers";
 
 export default function Workout({ exercise }: { exercise: ExerciseType }) {
-  const [isCompleted, setIsCompleted] = React.useState(true);
   const { title, sets, reps, weight, weightUnit, isEmom, isLadder, comment } =
     exercise;
 
@@ -44,20 +24,7 @@ export default function Workout({ exercise }: { exercise: ExerciseType }) {
   return (
     <ListItem fontSize={"xs"} my="0px" py="0px">
       <Flex minH="1.5rem" alignItems={"center"}>
-        {isCompleted ? (
-          <ListIcon
-            as={MdCheckCircle}
-            color="green.500"
-            onClick={() => setIsCompleted((prevIsComplete) => !prevIsComplete)}
-          />
-        ) : (
-          <ListIcon
-            as={MdAccessTime}
-            color="yellow.500"
-            onClick={() => setIsCompleted((prevIsComplete) => !prevIsComplete)}
-          />
-        )}
-
+        <ListIcon as={MdDone} color="green.500" />
         <Box
           display="flex"
           overflowX="scroll"

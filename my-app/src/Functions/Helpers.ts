@@ -37,16 +37,15 @@ export function uidInSnapshot(
 ): boolean {
   const snapshotUids = snapshot.docs.map((doc) => doc.data().uid);
   return snapshotUids.includes(uid);
+}
 
-  // if (!snapshot.empty) {
-  //   snapshot.forEach((doc) => {
-  //     const data = doc.data();
-  //     if (data.uid === uid) {
-  //       return true;
-  //     }
-  //   });
-  // }
-  // return false;
+export function formatDate(date: Date) {
+  return date.toLocaleDateString("en-CA", {
+    weekday: "long",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 async function addExerciseToDB(
@@ -180,4 +179,43 @@ export function objectsEqual(obj1: any, obj2: any) {
   }
 
   return true;
+}
+
+export function parseRepsPerSet(exercise: ExerciseType): number {
+  const { reps, isLadder } = exercise;
+
+  const parsedReps: string[] = reps
+    .replace(/[^0-9]/g, ",")
+    .split(",")
+    .filter((num) => num.length > 0);
+
+  let totalRepsPerSet = parsedReps.reduce((accumulated, number) => {
+    return accumulated + parseInt(number, 10);
+  }, 0);
+
+  totalRepsPerSet = isLadder ? totalRepsPerSet * 2 : totalRepsPerSet;
+  return totalRepsPerSet;
+}
+
+export function totalReps(exercise: ExerciseType): number {
+  const { sets } = exercise;
+
+  const totalRepsPerSet = parseRepsPerSet(exercise);
+
+  return sets * totalRepsPerSet;
+}
+
+export function workCapacity(exercise: ExerciseType): number {
+  return totalReps(exercise) * exercise.weight;
+}
+
+// EX: 4x(1,2,3,4) = 16 total sets.
+export function totalLadderSets(exercise: ExerciseType): number {
+  const { reps, sets } = exercise;
+  const parsedReps: string[] = reps
+    .replace(/[^0-9]/g, ",")
+    .split(",")
+    .filter((num) => num.length > 0);
+
+  return parsedReps.length * sets;
 }
